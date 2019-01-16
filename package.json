@@ -1,0 +1,10 @@
+{
+    "name": "server",
+    "version": "0.0.1",
+    "description": "Serveur",
+    "dependencies": {
+        "express": "^4.16.4",
+        "socket.io": "latest"
+    },
+    "author": "TTL"
+}
