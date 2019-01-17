@@ -55,7 +55,11 @@ io.sockets.on('connection', function(socket) {
             socket.emit('login', 'Désolé mais l\'équipe ' + message.team + ' est pleine');
         }
     });
+    socket.on('disconnect', (reason) => {
+        console.log('disconnected : ' + reason);
+        session.remove(reason.team, reason.pseudo);
+    });
 });
 
 
-server.listen(8080);
+server.listen(3000, '192.168.1.30');

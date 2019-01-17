@@ -17,6 +17,13 @@ class Session {
         return false;
     }
 
+    remove(pseudo, team) {
+        let map = this.sessions.get(team);
+        if (map) {
+            map.delete(pseudo);
+        }
+    }
+
 }
 
 module.exports = Session;
