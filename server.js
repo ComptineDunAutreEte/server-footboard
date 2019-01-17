@@ -62,4 +62,4 @@ io.sockets.on('connection', function(socket) {
 });
 
 
-server.listen(3000, 'https://server-app-tablet.herokuapp.com');
+server.listen(3000);
