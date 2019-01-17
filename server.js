@@ -62,4 +62,4 @@ io.sockets.on('connection', function(socket) {
 });
 
 
-server.listen(3000, '192.168.1.30');
+server.listen(3000);
