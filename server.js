@@ -29,13 +29,17 @@ websocket.on('connection', (socket) => {
     socket.emit('connection', 'Welcome');
 });*/
 
-var express = require('express');
-var app = express();
+
 var http = require('http');
 var fs = require('fs');
 var Session = require('./session');
 // Chargement du fichier index.html affiché au client
-var server = http.createServer(app);
+var server = http.createServer(function(req, res) {
+    fs.readFile('./index.html', 'utf-8', function(error, content) {
+        res.writeHead(200, { "Content-Type": "text/html" });
+        res.end(content);
+    });
+});
 
 // Chargement de socket.io
 var io = require('socket.io').listen(server);
