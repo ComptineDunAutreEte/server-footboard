@@ -8,6 +8,8 @@ class Session {
         this.sessions.set('B', this.sessionB);
     }
 
+    const tab = [{ A: '', B: '' }, { A: '', B: '' }, { A: '', B: '' }];
+
     add(team, pseudo, socket) {
         let map = this.sessions.get(team);
         if (map.size < 3) {

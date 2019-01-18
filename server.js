@@ -54,6 +54,7 @@ io.sockets.on('connection', function(socket) {
         } else {
             socket.emit('login', 'Désolé mais l\'équipe ' + message.team + ' est pleine');
         }
+        socket.emit('table', session.getTab());
     });
     socket.on('disconnect', (reason) => {
         console.log('disconnected : ' + reason);
