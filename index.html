@@ -90,6 +90,10 @@
         socket.on('login', function(message) {
             //alert('Le serveur a un message pour vous : ' + message.content);
             document.getElementById("title").innerHTML = message;
+            socket.emit('login', {
+                pseudo: pseudo,
+                team: team
+            });
         })
 
         document.getElementById("submit").addEventListener("click", myFunction);
