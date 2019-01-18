@@ -55,6 +55,7 @@ io.sockets.on('connection', function(socket) {
             socket.emit('login', 'Désolé mais l\'équipe ' + message.team + ' est pleine');
         }
     });
+    
     socket.on('disconnect', (reason) => {
         console.log('disconnected : ' + reason);
         session.remove(reason.team, reason.pseudo);
