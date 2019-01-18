@@ -11,7 +11,7 @@ class Session {
 
 
     setJSON(size, team, pseudo) {
-        if (team === A) {
+        if (team === 'A') {
             tab[size - 1].A = pseudo;
         } else {
             tab[size - 1].b = pseudo;

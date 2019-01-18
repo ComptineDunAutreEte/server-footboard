@@ -1,14 +1,14 @@
 {
-  "name": "server",
-  "version": "0.0.1",
-  "description": "Serveur",
-  "scripts": {
-    "start": "nodemon server.js"
-  },
-  "dependencies": {
-    "express": "^4.16.4",
-    "nodemon": "^1.18.9",
-    "socket.io": "latest"
-  },
-  "author": "TTL"
+    "name": "server",
+    "version": "0.0.1",
+    "description": "Serveur",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "express": "^4.16.4",
+        "nodemon": "^1.18.9",
+        "socket.io": "latest"
+    },
+    "author": "TTL"
 }
