@@ -56,6 +56,7 @@ io.sockets.on('connection', function(socket) {
         }
         socket.emit('table', session.getTab());
     });
+    
     socket.on('disconnect', (reason) => {
         console.log('disconnected : ' + reason);
         session.remove(reason.team, reason.pseudo);
