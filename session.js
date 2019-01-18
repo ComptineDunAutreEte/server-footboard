@@ -1,5 +1,8 @@
-const tab = [{ A: '', B: '' }, { A: '', B: '' }, { A: '', B: '' }];
+const tab = [{ A: '', 'B': '' }, { 'A': '', 'B': '' }, { 'A': '', 'B': '' }];
+
 class Session {
+
+
     constructor() {
         this.sessionA = new Map();
         this.sessionB = new Map();
@@ -7,19 +10,25 @@ class Session {
         this.sessions = new Map();
         this.sessions.set('A', this.sessionA);
         this.sessions.set('B', this.sessionB);
+        this.tab = [];
+        this.tab.push({ "A": '', "B": '' });
+        this.tab.push({ "A": '', "B": '' });
+        this.tab.push({ "A": '', "B": '' });
     }
 
 
     setJSON(size, team, pseudo) {
-        if (team === 'A') {
-            tab[size - 1].A = pseudo;
-        } else {
-            tab[size - 1].b = pseudo;
+        if (size >= 0 && size < 3) {
+            if (team === 'A') {
+                this.tab[size].A = pseudo;
+            } else {
+                this.tab[size].B = pseudo;
+            }
         }
     }
 
     getTab() {
-        return tab;
+        return this.tab;
     }
 
     add(team, pseudo, socket) {
