@@ -85,7 +85,7 @@
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        var socket = io.connect('https://server-app-tablet.herokuapp.com/');
+        var socket = io.connect('http://eeriel.fr:3000');
 
         socket.on('login', function(message) {
             //alert('Le serveur a un message pour vous : ' + message.content);
