@@ -1,11 +1,11 @@
 const Game = require("../model/game");
 
 class GameFactory {
-    create(level, teamInfos) {
+    create(level, teams) {
         const game = new Game();
 
         game.level = level;
-        game.teamInfos = teamInfos;
+        game.teams = teams;
 
         return game;
     }

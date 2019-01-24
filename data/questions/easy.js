@@ -1,27 +1,5 @@
 const easyQuestions = [
-    {
-        question: "Laquelle de ces affirmations est fausse ?\n" +
-        "Un joueur ne se trouve pas en position de hors-jeu quand :",
-        illustration: null,
-        responses: [
-            {
-                response: "Il se trouve dans sa propre moitié de terrain",
-                isValid: false,
-            },
-            {
-                response: "Il se trouve à la même hauteur que le dernier adversaire",
-                isValid: true,
-            },
-            {
-                response: "Il se trouve à la même hauteur que les deux derniers adversaires",
-                isValid: false,
-            },
-            {
-                response: "Il se trouve derrière le ballon lors de la passe ou sur la meme ligne",
-                isValid: false,
-            },
-        ]
-    },
+
     {
         question: "Quelles sont les dimentions des cages ?",
         illustration: null,
@@ -47,7 +25,33 @@ const easyQuestions = [
                 time: null
             },
         ]
-    }
+    },
+    {
+        question: "Quelle est l'equipe qui detient le plus grand nombre de titre de champion de France ?",
+        illustration: null,
+        responses: [
+            {
+                response: "Saint-Etienne",
+                isValid: true,
+                time: null
+            },
+            {
+                response: "Paris",
+                isValid: true,
+                time: null
+            },
+            {
+                response: "Marseille",
+                isValid: false,
+                time: null
+            },
+            {
+                response: "Reims",
+                isValid: false,
+                time: null
+            },
+        ]
+    },
 ];
 
 module.exports = easyQuestions;

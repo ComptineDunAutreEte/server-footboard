@@ -1,7 +1,7 @@
 class Game {
     constructor() {
         this.level = 0;
-        this.teamInfos = null;
+        this.teams = null;
     }
 }
 
