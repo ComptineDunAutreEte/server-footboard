@@ -82,14 +82,14 @@ io.sockets.on('connection', function(socket) {
     });
 
 
+    socket.on('reset', (reason) => {
+        session.reset()
+    });
+
     socket.on('loginTable', (reason) => {
         console.log('la table est connecté');
         session.setTableSession(socket);
         session.getTableSession().emit('table', session.getTab());
-    });
-
-    socket.on('reset', (reason) => {
-        session.reset();
     });
 
     socket.on('table', (reason) => {
@@ -103,4 +103,4 @@ io.sockets.on('connection', function(socket) {
 });
 
 
-server.listen(4000, '127.0.0.1');
+server.listen(process.env.PORT || 4000);
