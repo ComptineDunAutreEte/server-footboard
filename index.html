@@ -67,6 +67,7 @@
 
 <body>
     <h1 id="title"></h1>
+    <img id="img-stream2" src="" style="width: 50%; height: 50%" />
     <div>
         <div>
             <label for="speudo">Speudo :</label>
@@ -85,13 +86,33 @@
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        var socket = io.connect('https://server-app-tablet.herokuapp.com/', {
+        function b64(e) {
+            var t = "";
+            var n = new Uint8Array(e);
+            var r = n.byteLength;
+            for (var i = 0; i < r; i++) {
+                t += String.fromCharCode(n[i])
+            }
+            return window.btoa(t)
+        }
+        var socket = io.connect('http://localhost:4000', {
             reconnect: true
         });
+
+        var imgChunks = [];
 
         socket.on('login', function(message) {
             //alert('Le serveur a un message pour vous : ' + message.content);
             document.getElementById("title").innerHTML = message;
+        })
+
+        socket.on('img', function(data) {
+            //alert('Le serveur a un message pour vous : ' + message.content);
+            //console.log(data);
+            /// $("img-stream2").attr("src", data);
+            let img = document.querySelector("#img-stream2");
+            img.setAttribute('src', data);
+
         })
 
         document.getElementById("submit").addEventListener("click", myFunction);

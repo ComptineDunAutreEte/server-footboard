@@ -14,8 +14,33 @@ class Session {
         this.tab.push({ "A": '', "B": '' });
         this.tab.push({ "A": '', "B": '' });
         this.tab.push({ "A": '', "B": '' });
+        this.indexA = 0;
+        this.table = null;
     }
 
+    estCompletA() {
+        console.log("estcomplet", (this.sessionA.size === 3));
+        return this.sessionA.size === 3;
+    }
+
+    nextSessionA() {
+        let tab = Array.from(this.sessionA.values());
+        let socket = tab[this.indexA % tab.length];
+        this.indexA++;
+        return socket;
+    }
+
+    getTableSession() {
+        return this.table;
+    }
+
+    setTableSession(socket) {
+        this.table = socket;
+    }
+
+    getSession(team) {
+        return this.sessions.get(team);
+    }
 
     setJSON(size, team, pseudo) {
         if (size >= 0 && size < 3) {

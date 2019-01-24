@@ -33,29 +33,67 @@ websocket.on('connection', (socket) => {
 var http = require('http');
 var fs = require('fs');
 var Session = require('./session');
+var question = require('./question-collectif/question-collectif');
+var path = require('path');
 // Chargement du fichier index.html affiché au client
 var server = http.createServer(function(req, res) {
     fs.readFile('./index.html', 'utf-8', function(error, content) {
         res.writeHead(200, { "Content-Type": "text/html" });
         res.end(content);
+
     });
 });
+
+
 
 // Chargement de socket.io
 var io = require('socket.io').listen(server);
 var session = new Session();
 // Quand un client se connecte, on le note dans la console
 io.sockets.on('connection', function(socket) {
+
     console.log('Un client est connecté !');
+    //console.log(question);
     socket.on('login', (message) => {
         console.log(message);
         if (session.add(message.team, message.pseudo, socket)) {
-            socket.emit('login', 'Bienvenue dans la team ' + message.team + ' ' + message.pseudo);
+            fs.readFile('./img_question.png', function(err, data) {
+                //console.log(data);
+                //socket.emit('imageConversionByClient', { image: true, buffer: data });
+                socket.emit('img', "data:image/png;base64," + data.toString("base64"));
+            });
+            socket.emit('question-collectif-waiting', 'Anttendez votre tour');
+            if (session.estCompletA()) {
+                session.nextSessionA().emit('question-collectif', question.firstQuestion());
+            }
+            // socket.emit('login', 'Bienvenue dans la team ' + message.team + ' ' + message.pseudo);
         } else {
             socket.emit('login', 'Désolé mais l\'équipe ' + message.team + ' est pleine');
         }
-        socket.emit('table', session.getTab());
+        if (session.getTableSession() !== null) {
+            session.getTableSession().emit('table', session.getTab());
+        }
     });
+
+    socket.on('question-collectif', (reason) => {
+        let quest = question.answer(reason);
+        if (quest !== null) {
+            session.nextSessionA().emit('question-collectif', quest);
+        }
+        //console.log("Reponse ", reason);
+    });
+
+
+    socket.on('loginTable', (reason) => {
+        console.log('la table est connecté');
+        session.setTableSession(socket);
+        session.getTableSession().emit('table', session.getTab());
+    });
+
+    socket.on('table', (reason) => {
+        console.log('la table: ' + reason);
+    });
+
     socket.on('disconnect', (reason) => {
         console.log('disconnected : ' + reason);
         session.remove(reason.team, reason.pseudo);
@@ -63,4 +101,4 @@ io.sockets.on('connection', function(socket) {
 });
 
 
-server.listen(process.env.PORT || 3000);
+server.listen(process.env.PORT || 4000);
