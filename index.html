@@ -96,12 +96,12 @@
             return window.btoa(t)
         }
 
-        /*var socket = io.connect('http://localhost:4000', {
-            reconnect: true
-        });*/
-        var socket = io.connect('https://server-app-tablet.herokuapp.com/', {
+        var socket = io.connect('http://localhost:4000', {
             reconnect: true
         });
+        /*var socket = io.connect('https://server-app-tablet.herokuapp.com/', {
+            reconnect: true
+        });*/
         var imgChunks = [];
 
         socket.on('login', function(message) {

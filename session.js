@@ -23,6 +23,11 @@ class Session {
         return this.sessionA.size === 3;
     }
 
+    reset() {
+        this.sessionA.clear();
+        this.sessionB.clear();
+    }
+
     nextSessionA() {
         let tab = Array.from(this.sessionA.values());
         let socket = tab[this.indexA % tab.length];

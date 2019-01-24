@@ -51,8 +51,6 @@ var io = require('socket.io').listen(server);
 var session = new Session();
 // Quand un client se connecte, on le note dans la console
 io.sockets.on('connection', function(socket) {
-
-    console.log('Un client est connecté !');
     //console.log(question);
     socket.on('login', (message) => {
         console.log(message);
@@ -90,6 +88,10 @@ io.sockets.on('connection', function(socket) {
         session.getTableSession().emit('table', session.getTab());
     });
 
+    socket.on('reset', (reason) => {
+        session.reset();
+    });
+
     socket.on('table', (reason) => {
         console.log('la table: ' + reason);
     });
@@ -101,4 +103,4 @@ io.sockets.on('connection', function(socket) {
 });
 
 
-server.listen(process.env.PORT || 4000);
+server.listen(4000, '127.0.0.1');
