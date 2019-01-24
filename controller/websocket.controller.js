@@ -43,8 +43,6 @@ class WebSocketController {
 
         const game = gameFactory.create(levels.easy, teamsInfos); // @TODO CHANGER LEVEL A RECUPERER MANUELLEMENT
         this.gameService.setGame(game);
-        console.log(game);
-
         this.questionsService.setQuestions(questionFactory.createQuestions(game.level));
 
         socket.emit(channels.init, game);
@@ -69,8 +67,6 @@ class WebSocketController {
             });
 
             this.gameService.setGame(game);
-
-            console.log(game.teams);
 
             socket.emit(channels.login, isUserAdded);
         });
@@ -101,19 +97,24 @@ class WebSocketController {
 
                 if (isEverybodyReady) {
                     console.log("everybody is ready");
+                    socket.emit(channels.ready, true);
                     this.sendQuestion(socket);
                 } else {
-                    // @TODO implement not ready
+                    socket.emit(channels.ready, false);
                 }
             }
         });
     }
 
     sendQuestion(socket) {
+        console.log("questions");
         socket.on(channels.question, () => {
+            console.log("socket questions");
             let questions = this.questionsService.getQuestions();
+            console.log("questions", questions);
             const indexQuestion = this.getRandomInt(0, questions.length - 1);
             const question = questions[indexQuestion];
+            console.log("single question", question);
             questions.splice(indexQuestion, 1); // Supperssion de la question dans le tableau
             socket.emit(channels.question, question);
         });

@@ -9,10 +9,13 @@ class SimpleQuestionFactory {
         let questions = [];
         switch(level) {
             case levels.easy:
-                console.log("easy");
-                easyQuestions.forEach((o) => {
+                easyQuestions.forEach((q) => {
                     const question = new Question();
-                    console.log(question);
+                    question.responses = q.responses;
+                    question.id = q.id;
+                    question.question = q.question;
+                    question.illustration = q.illustration;
+                    questions.push(question);
                 });
                 break;
             case levels.medium:
