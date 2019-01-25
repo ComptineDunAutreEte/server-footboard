@@ -100,6 +100,19 @@ io.sockets.on('connection', function(socket) {
         console.log('disconnected : ' + reason);
         session.remove(reason.team, reason.pseudo);
     });
+
+    socket.on('addPlayers', (count) => {
+        console.log("Players added ! new count is : " + count);
+        session.setTableSession(socket);
+        session.getTableSession().emit('response', "player count refreshed");
+    });
+
+    socket.on('rmPlayers', (count) => {
+        console.log("Players removed... new count is : " + count);
+        session.setTableSession(socket);
+       session.getTableSession().emit('response', "player count refreshed");
+    });
+
 });
 
 
