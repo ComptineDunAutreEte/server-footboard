@@ -34,6 +34,7 @@ var http = require('http');
 var fs = require('fs');
 var Session = require('./session');
 var question = require('./question-collectif/question-collectif');
+var questionv2 = require('./question-collectif/question-collectif-v2');
 var path = require('path');
 // Chargement du fichier index.html affiché au client
 var server = http.createServer(function(req, res) {
@@ -53,14 +54,26 @@ var session = new Session();
 io.sockets.on('connection', function(socket) {
     //console.log(question);
     socket.on('login', (message) => {
-        console.log(message);
-        if (session.add(message.team, message.pseudo, socket)) {
+
+        if (message.type === 'tablet') {
+            if (session.add(message.team, message.id, socket)) {
+                console.log('connected');
+                socket.join('navigate');
+                socket.join('send-question-collectif');
+                socket.join('send-question-collectif-v2');
+                socket.emit('navigate', 'Home');
+            }
+        } else { //cas ou c'est la table
+
+        }
+        /*console.log(message);
+        if (session.add(message.team, message.id, socket)) {
             fs.readFile('./img_question.png', function(err, data) {
                 //console.log(data);
                 //socket.emit('imageConversionByClient', { image: true, buffer: data });
                 socket.emit('img', "data:image/png;base64," + data.toString("base64"));
             });
-            socket.emit('question-collectif-waiting', 'Anttendez votre tour');
+            socket.emit('question-collectif-waiting', 'Attendez votre tour');
             if (session.estCompletA()) {
                 session.nextSessionA().emit('question-collectif', question.firstQuestion());
             }
@@ -70,8 +83,24 @@ io.sockets.on('connection', function(socket) {
         }
         if (session.getTableSession() !== null) {
             session.getTableSession().emit('table', session.getTab());
-        }
+        }*/
     });
+
+    socket.on('question-collectif-request', (reason) => {
+        console.log(reason);
+        socket.emit('navigate', 'QuestionCollectif');
+    });
+
+    socket.on('question-collectif-request-v2', (reason) => {
+        console.log(reason);
+        socket.emit('navigate', 'QuestionCollectifV2');
+        socket.emit('ask-question-collectif-request-v2', questionv2.situation);
+    });
+
+    /*socket.on('ask-question-collectif-request-v2', (reason) => {
+        console.log(reason);
+        socket.emit('ask-question-collectif-request-v2', questionv2.situation);
+    });*/
 
     socket.on('question-collectif', (reason) => {
         let quest = question.answer(reason);
@@ -83,7 +112,7 @@ io.sockets.on('connection', function(socket) {
 
 
     socket.on('reset', (reason) => {
-        session.reset()
+        session.reset();
     });
 
     socket.on('loginTable', (reason) => {
@@ -98,7 +127,7 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('disconnect', (reason) => {
         console.log('disconnected : ' + reason);
-        session.remove(reason.team, reason.pseudo);
+        session.remove(reason.team, reason.id);
     });
 });
 
