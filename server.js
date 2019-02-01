@@ -140,6 +140,7 @@ io.sockets.on('connection', function(socket) {
     retrieveSimpleQuestionResponse(socket);
 
     socket.on('reset', (reason) => {
+        questionv2.ready = 0;
         console.log('reset');
         console.log('SIZE ', session.getTeam('A').players.size);
         session.reset();
