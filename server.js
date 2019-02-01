@@ -21,21 +21,23 @@ var session = new Session();
 // Quand un client se connecte, on le note dans la console
 
 const Player = require("./model/player");
+const categories = require("./model/categories");
+const levels = require("./model/levels");
 
 io.sockets.on('connection', function(socket) {
 
-    console.log("connection");
-
+    console.log('connected');
     socket.on('login', (message) => {
-        console.log('connected');
-        const data = message.data;
-
-        const player = new Player();
-        player.pseudo = data.pseudo;
-        player.uuid = message.uuid;
-        player.team = data.team;
-
         if (message.type === 'tablet') {
+            const data = message.data;
+            console.log(data);
+
+            const player = new Player();
+            player.pseudo = data.pseudo;
+            player.uuid = message.uuid;
+            player.team = data.team;
+            player.level = data.userLevel;
+
             if (session.add(player, socket)) {
                 //console.log(session);
                 console.log('connected');
@@ -129,13 +131,7 @@ io.sockets.on('connection', function(socket) {
         //console.log("Reponse ", reason);
     });
 
-    socket.on("ready", (response) => {
-        console.log(response);
-        /*socket.on("simple-question", (response) => {
-            console.log(response);
-            socket.emit('navigate', 'Question');
-        });*/
-    });
+    isEverybodyReady(socket);
 
     socket.on('reset', (reason) => {
         session.reset();
@@ -156,6 +152,74 @@ io.sockets.on('connection', function(socket) {
         // session.remove(reason.team, reason.id);
     });
 });
+
+function isEverybodyReady(socket) {
+    let isEverybodyReady = true;
+
+    socket.on("ready", (response) => {
+        console.log(response);
+
+        const uuid = response.uuid;
+
+        updateUser(uuid);
+
+        if (session.getPlayer(uuid).isReady) {
+            session.teams.forEach((team) => {
+                team.players.forEach((player) => {
+                    if (!player.isReady) {
+                        isEverybodyReady = false;
+                    }
+                })
+            });
+        }
+
+        if (isEverybodyReady) {
+            io.emit("ask-simple-question", {
+                isEverybodyReady: true,
+                question: {
+                    category: categories.cultureG,
+                    type: "",
+                    difficulty: levels.easy,
+                    question: "Quelles sont les dimentions des cages ?",
+                    illustration: null,
+                    responses: [{
+                            id: 1,
+                            response: "Largeur : 7,32m Hauteur : 2,44m",
+                            isValid: true,
+                            time: null
+                        },
+                        {
+                            id: 2,
+                            response: "Largeur : 7m Hauteur : 2,5m",
+                            isValid: true,
+                            time: null
+                        },
+                        {
+                            id: 3,
+                            response: "Largeur : 7,51m Hauteur : 2,32m",
+                            isValid: false,
+                            time: null
+                        },
+                        {
+                            id: 4,
+                            response: "Largeur : 7,83m Hauteur : 2,6m",
+                            isValid: false,
+                            time: null
+                        },
+                    ]
+                }
+            })
+        }
+        /*socket.on("simple-question", (response) => {
+            console.log(response);
+            socket.emit('navigate', 'Question');
+        });*/
+    });
+}
+
+function updateUser(uuid) {
+    session.getPlayer(uuid).isReady = true;
+}
 
 
 server.listen(process.env.PORT || 4000);
