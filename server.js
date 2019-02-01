@@ -5,14 +5,13 @@ var question = require('./question-collectif/question-collectif');
 var questionv2 = require('./question-collectif/question-collectif-v2');
 var path = require('path');
 // Chargement du fichier index.html affiché au client
-var server = http.createServer(function(req, res) {
-    fs.readFile('./index.html', 'utf-8', function(error, content) {
-        res.writeHead(200, { "Content-Type": "text/html" });
+var server = http.createServer(function (req, res) {
+    fs.readFile('./index.html', 'utf-8', function (error, content) {
+        res.writeHead(200, {"Content-Type": "text/html"});
         res.end(content);
 
     });
 });
-
 
 
 // Chargement de socket.io
@@ -21,11 +20,9 @@ var session = new Session();
 // Quand un client se connecte, on le note dans la console
 
 const Player = require("./model/player");
-const categories = require("./model/categories");
-const levels = require("./model/levels");
+const easyQuestions = require('./data/questions/easy');
 
 io.sockets.on('connection', function(socket) {
-
     console.log('connected');
     socket.on('login', (message) => {
         if (message.type === 'tablet') {
@@ -132,6 +129,7 @@ io.sockets.on('connection', function(socket) {
     });
 
     isEverybodyReady(socket);
+    retrieveSimpleQuestionResponse(socket);
 
     socket.on('reset', (reason) => {
         session.reset();
@@ -175,45 +173,32 @@ function isEverybodyReady(socket) {
 
         if (isEverybodyReady) {
             io.emit("ask-simple-question", {
-                isEverybodyReady: true,
-                question: {
-                    category: categories.cultureG,
-                    type: "",
-                    difficulty: levels.easy,
-                    question: "Quelles sont les dimentions des cages ?",
-                    illustration: null,
-                    responses: [{
-                            id: 1,
-                            response: "Largeur : 7,32m Hauteur : 2,44m",
-                            isValid: true,
-                            time: null
-                        },
-                        {
-                            id: 2,
-                            response: "Largeur : 7m Hauteur : 2,5m",
-                            isValid: true,
-                            time: null
-                        },
-                        {
-                            id: 3,
-                            response: "Largeur : 7,51m Hauteur : 2,32m",
-                            isValid: false,
-                            time: null
-                        },
-                        {
-                            id: 4,
-                            response: "Largeur : 7,83m Hauteur : 2,6m",
-                            isValid: false,
-                            time: null
-                        },
-                    ]
-                }
-            })
+                isEverybodyReady: true, question: easyQuestions[0]
+            });
         }
-        /*socket.on("simple-question", (response) => {
-            console.log(response);
-            socket.emit('navigate', 'Question');
-        });*/
+    });
+}
+
+function retrieveSimpleQuestionResponse(socket) {
+    socket.on("ask-simple-question", (response) => {
+        console.log(response);
+        const data = response.data;
+
+        let isCorrectPlayerResponse = false;
+
+        const player = session.getPlayer(response.uuid);
+
+        easyQuestions.forEach((question) => {
+            if (question.id === data.questionId) {
+                question.responses.forEach((res) => {
+                    if (res.id === data.userResponse && res.isValid) {
+                        isCorrectPlayerResponse = true;
+                    }
+                })
+            }
+        });
+
+        console.log(isCorrectPlayerResponse);
     });
 }
 
