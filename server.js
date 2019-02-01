@@ -129,6 +129,13 @@ io.sockets.on('connection', function(socket) {
         //console.log("Reponse ", reason);
     });
 
+
+    // indiv Question Communication
+    const indivQuestionChannel = "indivQuestion";
+    socket.on(indivQuestionChannel, (msg) => {
+        console.log(msg);
+    });
+
     isEverybodyReady(socket);
     retrieveSimpleQuestionResponse(socket);
 
