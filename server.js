@@ -52,11 +52,11 @@ var io = require('socket.io').listen(server);
 var session = new Session();
 // Quand un client se connecte, on le note dans la console
 io.sockets.on('connection', function(socket) {
-    //console.log(question);
+    console.log('connected');
     socket.on('login', (message) => {
-
+        //console.log('login');
         if (message.type === 'tablet') {
-            if (session.add(message.team, message.id, socket)) {
+            if (session.add(message.data.team, message.id, socket)) {
                 console.log('connected');
                 socket.join('navigate');
                 socket.join('send-question-collectif');
@@ -64,6 +64,14 @@ io.sockets.on('connection', function(socket) {
                 socket.emit('navigate', 'Home');
             }
         } else { //cas ou c'est la table
+            //console.log('ici')
+            session.table = socket;
+            socket.emit('start-question-collectif', '');
+            socket.on('video-resume-question-collectif', (message) => {
+                io.emit('navigate', 'QuestionCollectif')
+                    //socket.emit('navigate', 'QuestionCollectifV2');
+                    //session.nextSessionA().emit('question-collectif', question.firstQuestion());
+            });
 
         }
         /*console.log(message);
@@ -94,13 +102,15 @@ io.sockets.on('connection', function(socket) {
     socket.on('question-collectif-request-v2', (reason) => {
         console.log(reason);
         socket.emit('navigate', 'QuestionCollectifV2');
-        socket.emit('ask-question-collectif-request-v2', questionv2.situation);
+        //socket.emit('ask-question-collectif-request-v2', questionv2.situation);
+
     });
 
-    /*socket.on('ask-question-collectif-request-v2', (reason) => {
-        console.log(reason);
+    socket.on('ask-question-collectif-request-v2', (reason) => {
+        console.log(questionv2.answers[0]);
         socket.emit('ask-question-collectif-request-v2', questionv2.situation);
-    });*/
+        socket.emit('answers-question-collectif-request-v2', questionv2.answers[0]);
+    });
 
     socket.on('question-collectif', (reason) => {
         let quest = question.answer(reason);
