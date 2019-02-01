@@ -50,10 +50,10 @@ io.sockets.on('connection', function(socket) {
                     socket.emit('ask-question-collectif-request-v2', questionv2.situation);
                     questionv2.ready += 1;
                     if (questionv2.ready === 3) {
-                        let sessions = session.getSession('A');
+                        let sessions = session.getTeam('A');
                         let index = 0;
-                        for (let session of sessions.values()) {
-                            session.emit('');
+                        for (let session of sessions) {
+                            //session.emit('');
                             socket.emit('answers-question-collectif-request-v2', questionv2.answers[index]);
                             index += 1;
                         }

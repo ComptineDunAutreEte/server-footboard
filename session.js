@@ -28,8 +28,8 @@ class Session {
     }
 
     reset() {
-        this.sessionA.clear();
-        this.sessionB.clear();
+        this.getTeam('A').players = [];
+        this.getTeam('B').players = [];
     }
 
     nextSessionA() {
