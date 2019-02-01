@@ -19,7 +19,7 @@ const easyQuestions = [
             {
                 id: 2,
                 response: "Largeur : 7m Hauteur : 2,5m",
-                isValid: true,
+                isValid: false,
                 time: null
             },
             {

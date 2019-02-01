@@ -103,6 +103,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     isEverybodyReady(socket);
+    retrieveSimpleQuestionResponse(socket);
 
     socket.on('reset', (reason) => {
         session.reset();
@@ -147,12 +148,31 @@ function isEverybodyReady(socket) {
         if (isEverybodyReady) {
             io.emit("ask-simple-question", {
                 isEverybodyReady: true, question: easyQuestions[0]
-            })
+            });
         }
-        /*socket.on("simple-question", (response) => {
-            console.log(response);
-            socket.emit('navigate', 'Question');
-        });*/
+    });
+}
+
+function retrieveSimpleQuestionResponse(socket) {
+    socket.on("ask-simple-question", (response) => {
+        console.log(response);
+        const data = response.data;
+
+        let isCorrectPlayerResponse = false;
+
+        const player = session.getPlayer(response.uuid);
+
+        easyQuestions.forEach((question) => {
+            if (question.id === data.questionId) {
+                question.responses.forEach((res) => {
+                    if (res.id === data.userResponse && res.isValid) {
+                        isCorrectPlayerResponse = true;
+                    }
+                })
+            }
+        });
+
+        console.log(isCorrectPlayerResponse);
     });
 }
 
