@@ -1,35 +1,3 @@
-/*var express = require('express');
-var http = require('http')
-var socketio = require('socket.io');
-
-var app = express();
-var server = http.Server(app);
-var websocket = socketio(server);
-server.listen(3000, () => console.log('listening on *:3000'));
-
-var sessions = [];
-
-/*
-// The event will be called when a client is connected.
-websocket.on('connection', (socket) => {
-
-    console.log('A client just joined on', socket.id);
-
-    socket.on('add-user', (message) => {
-        if (sessions.length === 3) {
-            socket.emit('message', 'Trop du monde');
-        } else if (sessions.length < 3) {
-            sessions[message.username] = {
-                "socket": socket.id
-            };
-            console.log("final", sessions);
-        }
-
-    });
-    socket.emit('connection', 'Welcome');
-});*/
-
-
 var http = require('http');
 var fs = require('fs');
 var Session = require('./session');
@@ -51,12 +19,23 @@ var server = http.createServer(function(req, res) {
 var io = require('socket.io').listen(server);
 var session = new Session();
 // Quand un client se connecte, on le note dans la console
+
+const Player = require("./model/player");
+
 io.sockets.on('connection', function(socket) {
     console.log('connected');
     socket.on('login', (message) => {
-        //console.log('login');
+
+        const data = message.data;
+
+        const player = new Player();
+        player.pseudo = data.pseudo;
+        player.uuid = message.uuid;
+        player.team = data.team;
+
         if (message.type === 'tablet') {
-            if (session.add(message.data.team, message.id, socket)) {
+            if (session.add(player, socket)) {
+                console.log(session);
                 console.log('connected');
                 socket.join('navigate');
                 socket.join('send-question-collectif');
@@ -123,15 +102,12 @@ io.sockets.on('connection', function(socket) {
     });
 
     socket.on("ready", (isReady) => {
-        console.log(isReady);
+
         socket.on("simple-question", (response) => {
             console.log(response);
             socket.emit('navigate', 'Question');
         });
     });
-
-
-
 
     socket.on('reset', (reason) => {
         session.reset();
