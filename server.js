@@ -101,12 +101,12 @@ io.sockets.on('connection', function(socket) {
         //console.log("Reponse ", reason);
     });
 
-    socket.on("ready", (isReady) => {
-
-        socket.on("simple-question", (response) => {
+    socket.on("ready", (response) => {
+        console.log(response);
+        /*socket.on("simple-question", (response) => {
             console.log(response);
             socket.emit('navigate', 'Question');
-        });
+        });*/
     });
 
     socket.on('reset', (reason) => {
@@ -125,7 +125,7 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('disconnect', (reason) => {
         console.log('disconnected : ' + reason);
-        session.remove(reason.team, reason.id);
+        // session.remove(reason.team, reason.id);
     });
 });
 

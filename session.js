@@ -108,6 +108,9 @@ class Session {
     }
 
     remove(pseudo, team) {
+
+
+
         let map = this.sessions.get(team);
         if (map) {
             let size = Array.from(map.keys()).indexOf(1);
