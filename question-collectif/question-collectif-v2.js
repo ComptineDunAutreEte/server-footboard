@@ -2,6 +2,7 @@ class QuestionCollectifV2 {
     constructor(situation, answers) {
         this.situation = situation;
         this.answers = answers;
+        this.ready = 0;
     }
 }
 
