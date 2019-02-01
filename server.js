@@ -5,9 +5,9 @@ var question = require('./question-collectif/question-collectif');
 var questionv2 = require('./question-collectif/question-collectif-v2');
 var path = require('path');
 // Chargement du fichier index.html affiché au client
-var server = http.createServer(function (req, res) {
-    fs.readFile('./index.html', 'utf-8', function (error, content) {
-        res.writeHead(200, {"Content-Type": "text/html"});
+var server = http.createServer(function(req, res) {
+    fs.readFile('./index.html', 'utf-8', function(error, content) {
+        res.writeHead(200, { "Content-Type": "text/html" });
         res.end(content);
 
     });
@@ -41,6 +41,7 @@ io.sockets.on('connection', function(socket) {
                 socket.join('navigate');
                 socket.join('send-question-collectif');
                 socket.join('send-question-collectif-v2');
+                socket.join('reset');
                 socket.emit('navigate', 'Home');
                 socket.join("simple-question");
                 socket.on('ready-question-collectif-v2', (message) => {
@@ -132,7 +133,10 @@ io.sockets.on('connection', function(socket) {
     retrieveSimpleQuestionResponse(socket);
 
     socket.on('reset', (reason) => {
+        console.log('reset');
+        console.log('SIZE ', session.getTeam('A').players.size);
         session.reset();
+        console.log('SIZE ', session.getTeam('A').players.size);
     });
 
     socket.on('loginTable', (reason) => {
@@ -173,7 +177,8 @@ function isEverybodyReady(socket) {
 
         if (isEverybodyReady) {
             io.emit("ask-simple-question", {
-                isEverybodyReady: true, question: easyQuestions[0]
+                isEverybodyReady: true,
+                question: easyQuestions[0]
             });
         }
     });
