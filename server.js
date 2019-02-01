@@ -62,6 +62,8 @@ io.sockets.on('connection', function(socket) {
                 socket.join('send-question-collectif');
                 socket.join('send-question-collectif-v2');
                 socket.emit('navigate', 'Home');
+
+                socket.join("simple-question");
             }
         } else { //cas ou c'est la table
 
@@ -110,6 +112,16 @@ io.sockets.on('connection', function(socket) {
         //console.log("Reponse ", reason);
     });
 
+    socket.on("ready", (isReady) => {
+        console.log(isReady);
+        socket.on("simple-question", (response) => {
+            console.log(response);
+            socket.emit('navigate', 'Question');
+        });
+    });
+
+
+
 
     socket.on('reset', (reason) => {
         session.reset();
@@ -132,4 +144,4 @@ io.sockets.on('connection', function(socket) {
 });
 
 
-server.listen(process.env.PORT || 4000);
+server.listen(process.env.PORT || 3000);
