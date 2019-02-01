@@ -5,14 +5,13 @@ var question = require('./question-collectif/question-collectif');
 var questionv2 = require('./question-collectif/question-collectif-v2');
 var path = require('path');
 // Chargement du fichier index.html affiché au client
-var server = http.createServer(function(req, res) {
-    fs.readFile('./index.html', 'utf-8', function(error, content) {
-        res.writeHead(200, { "Content-Type": "text/html" });
+var server = http.createServer(function (req, res) {
+    fs.readFile('./index.html', 'utf-8', function (error, content) {
+        res.writeHead(200, {"Content-Type": "text/html"});
         res.end(content);
 
     });
 });
-
 
 
 // Chargement de socket.io
@@ -21,10 +20,9 @@ var session = new Session();
 // Quand un client se connecte, on le note dans la console
 
 const Player = require("./model/player");
-const categories = require("./model/categories");
-const levels = require("./model/levels");
+const easyQuestions = require('./data/questions/easy');
 
-io.sockets.on('connection', function(socket) {
+io.sockets.on('connection', function (socket) {
     console.log('connected');
     socket.on('login', (message) => {
         if (message.type === 'tablet') {
@@ -53,8 +51,8 @@ io.sockets.on('connection', function(socket) {
             socket.emit('start-question-collectif', '');
             socket.on('video-resume-question-collectif', (message) => {
                 io.emit('navigate', 'QuestionCollectif')
-                    //socket.emit('navigate', 'QuestionCollectifV2');
-                    //session.nextSessionA().emit('question-collectif', question.firstQuestion());
+                //socket.emit('navigate', 'QuestionCollectifV2');
+                //session.nextSessionA().emit('question-collectif', question.firstQuestion());
             });
 
         }
@@ -147,39 +145,9 @@ function isEverybodyReady(socket) {
         }
 
         if (isEverybodyReady) {
-            io.emit("ask-simple-question", {isEverybodyReady: true, question: {
-                    category: categories.cultureG,
-                    type: "",
-                    difficulty: levels.easy,
-                    question: "Quelles sont les dimentions des cages ?",
-                    illustration: null,
-                    responses: [
-                        {
-                            id: 1,
-                            response: "Largeur : 7,32m Hauteur : 2,44m",
-                            isValid: true,
-                            time: null
-                        },
-                        {
-                            id: 2,
-                            response: "Largeur : 7m Hauteur : 2,5m",
-                            isValid: true,
-                            time: null
-                        },
-                        {
-                            id: 3,
-                            response: "Largeur : 7,51m Hauteur : 2,32m",
-                            isValid: false,
-                            time: null
-                        },
-                        {
-                            id: 4,
-                            response: "Largeur : 7,83m Hauteur : 2,6m",
-                            isValid: false,
-                            time: null
-                        },
-                    ]
-                }})
+            io.emit("ask-simple-question", {
+                isEverybodyReady: true, question: easyQuestions[0]
+            })
         }
         /*socket.on("simple-question", (response) => {
             console.log(response);
