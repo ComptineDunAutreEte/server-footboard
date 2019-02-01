@@ -22,7 +22,7 @@ var session = new Session();
 const Player = require("./model/player");
 const easyQuestions = require('./data/questions/easy');
 
-io.sockets.on('connection', function (socket) {
+io.sockets.on('connection', function(socket) {
     console.log('connected');
     socket.on('login', (message) => {
         if (message.type === 'tablet') {
@@ -36,21 +36,47 @@ io.sockets.on('connection', function (socket) {
             player.level = data.userLevel;
 
             if (session.add(player, socket)) {
-                console.log(session);
+                //console.log(session);
                 console.log('connected');
                 socket.join('navigate');
                 socket.join('send-question-collectif');
                 socket.join('send-question-collectif-v2');
                 socket.emit('navigate', 'Home');
-
                 socket.join("simple-question");
+                socket.on('ready-question-collectif-v2', (message) => {
+                    socket.emit('ask-question-collectif-request-v2', questionv2.situation);
+                    questionv2.ready += 1;
+                    if (questionv2.ready === 3) {
+                        let sessions = session.getSession('A');
+                        let index = 0;
+                        for (let session of sessions.values()) {
+                            session.emit('');
+                            socket.emit('answers-question-collectif-request-v2', questionv2.answers[index]);
+                            index += 1;
+                        }
+                    }
+                });
             }
         } else { //cas ou c'est la table
-            //console.log('ici')
+            console.log('ici-table')
             session.table = socket;
-            socket.emit('start-question-collectif', '');
+            //socket.emit('start-question-collectif', '');
             socket.on('video-resume-question-collectif', (message) => {
-                io.emit('navigate', 'QuestionCollectif')
+                io.emit('navigate', 'QuestionCollectif');
+                //socket.emit('img', "data:image/png;base64," + data.toString("base64"));
+
+                //console.log('pause-resume');
+                //socket.emit('navigate', 'QuestionCollectifV2');
+                //session.nextSessionA().emit('question-collectif', question.firstQuestion());
+            });
+            socket.on('question-collectif-ready', (message) => {
+                fs.readFile('./img_question.png', function(err, data) {
+                    //console.log(data);
+                    //socket.emit('imageConversionByClient', { image: true, buffer: data });
+                    socket.emit('img', "data:image/png;base64," + data.toString("base64"));
+                });
+                //socket.emit('img', "data:image/png;base64," + data.toString("base64"));
+                //console.log('pause-resume');
                 //socket.emit('navigate', 'QuestionCollectifV2');
                 //session.nextSessionA().emit('question-collectif', question.firstQuestion());
             });
@@ -181,4 +207,4 @@ function updateUser(uuid) {
 }
 
 
-server.listen(process.env.PORT || 3000);
+server.listen(process.env.PORT || 4000);
