@@ -36,32 +36,32 @@ io.sockets.on('connection', function(socket) {
             player.level = data.userLevel;
 
             if (session.add(player, socket)) {
-                //console.log(session);
+                console.log('add========================');
                 console.log('connected');
                 socket.join('navigate');
                 socket.join('send-question-collectif');
                 socket.join('send-question-collectif-v2');
-                socket.join('reset');
+                //socket.join('reset');
+                socket.on('questionn', (message) => {
+                    console.log('questionn recu');
+                    fs.readFile('./img_question.png', function(err, data) {
+                        console.log(data);
+                        //socket.emit('imageConversionByClient', { image: true, buffer: data });
+                        socket.emit('img', "data:image/png;base64," + data.toString("base64"));
+                    });
+                });
                 socket.emit('navigate', 'Home');
                 socket.join("simple-question");
                 socket.on('ready-question-collectif-v2', (message) => {
                     socket.emit('ask-question-collectif-request-v2', questionv2.situation);
                     questionv2.ready += 1;
-                    if (questionv2.ready === 3) {
-                        let sessions = session.getTeam('A');
-                        let index = 0;
-                        for (let session of sessions) {
-                            //session.emit('');
-                            socket.emit('answers-question-collectif-request-v2', questionv2.answers[index]);
-                            index += 1;
-                        }
-                    }
                 });
             }
         } else { //cas ou c'est la table
             console.log('ici-table')
             session.table = socket;
             //socket.emit('start-question-collectif', '');
+            socket.emit('questionn', '');
             socket.on('video-resume-question-collectif', (message) => {
                 io.emit('navigate', 'QuestionCollectif');
                 //socket.emit('img', "data:image/png;base64," + data.toString("base64"));
@@ -70,18 +70,6 @@ io.sockets.on('connection', function(socket) {
                 //socket.emit('navigate', 'QuestionCollectifV2');
                 //session.nextSessionA().emit('question-collectif', question.firstQuestion());
             });
-            socket.on('question-collectif-ready', (message) => {
-                fs.readFile('./img_question.png', function(err, data) {
-                    //console.log(data);
-                    //socket.emit('imageConversionByClient', { image: true, buffer: data });
-                    socket.emit('img', "data:image/png;base64," + data.toString("base64"));
-                });
-                //socket.emit('img', "data:image/png;base64," + data.toString("base64"));
-                //console.log('pause-resume');
-                //socket.emit('navigate', 'QuestionCollectifV2');
-                //session.nextSessionA().emit('question-collectif', question.firstQuestion());
-            });
-
         }
         /*console.log(message);
         if (session.add(message.team, message.id, socket)) {
@@ -114,6 +102,11 @@ io.sockets.on('connection', function(socket) {
         //socket.emit('ask-question-collectif-request-v2', questionv2.situation);
 
     });
+    socket.on('answers-question-collectif-request-v2', (message) => {
+        socket.emit('answers-question-collectif-request-v2', questionv2.answers[questionv2.ready - 1]);
+
+    });
+
 
     socket.on('ask-question-collectif-request-v2', (reason) => {
         console.log(questionv2.answers[0]);
@@ -124,7 +117,7 @@ io.sockets.on('connection', function(socket) {
     socket.on('question-collectif', (reason) => {
         let quest = question.answer(reason);
         if (quest !== null) {
-            session.nextSessionA().emit('question-collectif', quest);
+            //session.nextSessionA().emit('question-collectif', quest);
         }
         //console.log("Reponse ", reason);
     });
