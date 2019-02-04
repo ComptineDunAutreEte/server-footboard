@@ -125,8 +125,11 @@ io.sockets.on('connection', function(socket) {
 
     // indiv Question Communication
     const indivQuestionChannel = "indivQuestion";
+
     socket.on(indivQuestionChannel, (msg) => {
-        console.log(msg);
+        if (msg.data === "ready") {
+            io.emit("waitingScreen", {isReady: true});
+        }
     });
 
     isEverybodyReady(socket);
@@ -172,7 +175,7 @@ function isEverybodyReady(socket) {
                     if (!player.isReady) {
                         isEverybodyReady = false;
                     }
-                })
+                });
             });
         }
 
