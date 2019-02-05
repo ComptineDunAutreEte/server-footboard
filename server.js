@@ -22,6 +22,90 @@ var session = new Session();
 const Player = require("./model/player");
 const easyQuestions = require('./data/questions/easy');
 
+//==================Partie générale===============================
+getMessage(_code = 0, _data = null, type = '') {
+    let message = {
+        code: _code,
+        type: '',
+        data: _data,
+    };
+    return message;
+}
+
+function sendToOne(_data, socket, channel, _code = 0) {
+    let message = getMessage(0, _data, '');
+    socket.emit(channel, message);
+}
+
+function sendToAll(_data, chanel) { //faut faire une join au préalable
+    let message = getMessage(0, _data, '');
+    io.to(_data).emit(message);
+
+}
+//==================Fin Partie générale===============================
+
+
+
+//==================Partie de Long=====================================
+
+let room = {
+    question_parrallel: "question-parrallel", //code 30
+    question_sequentiel: "question_sequentiel", //code 40
+    navigate: "navigate", //code 20
+};
+
+function join_rooms(socket) {
+    socket.join(room.navigate);
+    socket.join(room.question_parrallel);
+    socket.join(room.question_sequentiel);
+}
+
+function socket_server_on(socket) {
+}
+
+function question_handler_seq(){
+
+}
+
+function question_hanndler_par(){
+
+}
+
+/**
+ * Protocol: cas question séquentiel
+ * la table prévient qu'il a une question:
+ * 
+ * table send: navigate 
+ * tablette receive: navigate (changer la page)//prévenir l'utilisateur a regarder son écran
+ * 
+ * tablette send: request_question 
+ * table receive: request_question
+ * 
+ * table send: question
+ * tablette receive: question
+ * 
+ * tablette send: ready_data
+ * table receive: ready_data
+ * 
+ * Lorque la vidéo est fini de jouer: 
+ * //aucune interaction avec la table possible, previent l'utilisateur de regarder la tablette
+ * 
+ * table send: video_pause
+ * tablette receive: video_pause => bouton are you ready apparaitre 
+ * 
+ * tablette send: ready_to_answer 
+ * table receive: ready_to_answer //wait for all
+ * table send: start_answer
+ * 
+ * tablette send_answer
+ * 
+ */
+
+//==================Fin Partie de Long=================================
+
+
+
+
 io.sockets.on('connection', function(socket) {
     console.log('connected');
     socket.on('login', (message) => {
@@ -128,7 +212,7 @@ io.sockets.on('connection', function(socket) {
 
     socket.on(indivQuestionChannel, (msg) => {
         if (msg.data === "ready") {
-            io.emit("waitingScreen", {isReady: true});
+            io.emit("waitingScreen", { isReady: true });
         }
     });
 
