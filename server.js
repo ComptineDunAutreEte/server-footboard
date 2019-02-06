@@ -23,7 +23,7 @@ const Player = require("./model/player");
 const easyQuestions = require('./data/questions/easy');
 
 //==================Partie générale===============================
-getMessage(_code = 0, _data = null, type = '') {
+function getMessage(_code = 0, _data = null, type = '') {
     let message = {
         code: _code,
         type: '',
@@ -51,7 +51,8 @@ function sendToAll(_data, chanel) { //faut faire une join au préalable
 let room = {
     question_parrallel: "question-parrallel", //code 30
     question_sequentiel: "question_sequentiel", //code 40
-    navigate: "navigate", //code 20
+    navigate: "navigation", //code 20
+    ready: "ready"
 };
 
 function join_rooms(socket) {
@@ -60,14 +61,13 @@ function join_rooms(socket) {
     socket.join(room.question_sequentiel);
 }
 
-function socket_server_on(socket) {
+function socket_server_on(socket) {}
+
+function question_handler_seq() {
+
 }
 
-function question_handler_seq(){
-
-}
-
-function question_hanndler_par(){
+function question_hanndler_par() {
 
 }
 
@@ -121,7 +121,12 @@ io.sockets.on('connection', function(socket) {
 
             if (session.add(player, socket)) {
                 console.log('add========================');
-                console.log('connected');
+                join_rooms(socket);
+
+                io.sockets.in(room.navigate).emit('navigate', 'QuestionCollectif');
+                //io.sockets.in(room.navigate).emit('ready', '');
+                sendToOne('', socket, 'ready', 1);
+                /*console.log('connected');
                 socket.join('navigate');
                 socket.join('send-question-collectif');
                 socket.join('send-question-collectif-v2');
@@ -139,7 +144,7 @@ io.sockets.on('connection', function(socket) {
                 socket.on('ready-question-collectif-v2', (message) => {
                     socket.emit('ask-question-collectif-request-v2', questionv2.situation);
                     questionv2.ready += 1;
-                });
+                });*/
             }
         } else { //cas ou c'est la table
             console.log('ici-table')
