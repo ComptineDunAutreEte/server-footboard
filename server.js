@@ -174,7 +174,7 @@ function isEverybodyReady(socket) {
 
         const uuid = response.uuid;
 
-        updateUser(uuid);
+        updateUser(uuid, true);
 
         if (session.getPlayer(uuid).isReady) {
             session.teams.forEach((team) => {
@@ -191,6 +191,8 @@ function isEverybodyReady(socket) {
                 isEverybodyReady: true,
                 question: easyQuestions[0]
             });
+
+            updateUser(uuid, true);
         }
     });
 }
@@ -210,16 +212,18 @@ function retrieveSimpleQuestionResponse(socket) {
                     if (res.id === data.userResponse && res.isValid) {
                         isCorrectPlayerResponse = true;
                     }
-                })
+                });
             }
         });
 
         console.log(isCorrectPlayerResponse);
+
+        socket.emit("indivQuestion", {msg: isCorrectPlayerResponse});
     });
 }
 
-function updateUser(uuid) {
-    session.getPlayer(uuid).isReady = true;
+function updateUser(uuid, isReady) {
+    session.getPlayer(uuid).isReady = isReady;
 }
 
 
