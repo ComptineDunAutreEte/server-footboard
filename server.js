@@ -138,6 +138,8 @@ function question_collectif_par(socket) {
 //==================Fin Partie de Long=================================
 
 
+let nQuestionCounter = 0;
+
 
 
 io.sockets.on('connection', function(socket) {
@@ -170,6 +172,24 @@ io.sockets.on('connection', function(socket) {
 
 
 
+                /************************
+                 * PARTIE LUTTHY
+                 ***********************/
+                const indivQuestionChannel = "indivQuestion";
+
+                socket.on(indivQuestionChannel, (msg) => {
+                    if (msg.data === "ready") {
+                        io.emit("waitingScreen", { isReady: true });
+                    }
+                });
+
+                isEverybodyReady(socket);
+                retrieveSimpleQuestionResponse(socket);
+
+                /************************
+                 * FIN PARTIE LUTTHY
+                 ***********************/
+
 
                 //io.sockets.in(room.navigate).emit('ready', '');
                 //sendToOne('', socket, 'ready', 1);
@@ -194,6 +214,10 @@ io.sockets.on('connection', function(socket) {
                 });*/
 
             }
+
+
+        /*---------------------------------------------------------------------------------*/
+        /*---------------------------------------------------------------------------------*/
         } else { //cas ou c'est la table
             console.log('ici-table')
             session.table = socket;
@@ -284,16 +308,7 @@ io.sockets.on('connection', function(socket) {
 
 
     // indiv Question Communication
-    const indivQuestionChannel = "indivQuestion";
 
-    socket.on(indivQuestionChannel, (msg) => {
-        if (msg.data === "ready") {
-            io.emit("waitingScreen", { isReady: true });
-        }
-    });
-
-    isEverybodyReady(socket);
-    retrieveSimpleQuestionResponse(socket);
 
 
 
@@ -321,7 +336,7 @@ function isEverybodyReady(socket) {
 
         const uuid = response.uuid;
 
-        updateUser(uuid);
+        updateUser(uuid, true);
 
         if (session.getPlayer(uuid).isReady) {
             session.teams.forEach((team) => {
@@ -334,19 +349,25 @@ function isEverybodyReady(socket) {
         }
 
         if (isEverybodyReady) {
+            nQuestionCounter++;
             io.emit("ask-simple-question", {
                 isEverybodyReady: true,
-                question: easyQuestions[0]
+                question: easyQuestions[0],
+                questionCounter: nQuestionCounter,
+                maxTimer: 15
             });
+
+            updateUser(uuid, true);
         }
     });
 }
 
 function retrieveSimpleQuestionResponse(socket) {
     socket.on("ask-simple-question", (response) => {
-        console.log(response);
+        console.log("question", response);
         const data = response.data;
 
+        const userResponseTime = data.userResponseTime;
         let isCorrectPlayerResponse = false;
 
         const player = session.getPlayer(response.uuid);
@@ -356,17 +377,26 @@ function retrieveSimpleQuestionResponse(socket) {
                 question.responses.forEach((res) => {
                     if (res.id === data.userResponse && res.isValid) {
                         isCorrectPlayerResponse = true;
+                        updateUser(response.uuid, false);
+                        player.score += 1;
                     }
-                })
+                });
             }
         });
 
-        console.log(isCorrectPlayerResponse);
+        if (socket === player.session) {
+            socket.emit("response-simple-question", {
+                isCorrectPlayerResponse:isCorrectPlayerResponse
+            });
+        }
+
+
+        socket.emit("indivQuestion", {msg: isCorrectPlayerResponse});
     });
 }
 
-function updateUser(uuid) {
-    session.getPlayer(uuid).isReady = true;
+function updateUser(uuid, isReady) {
+    session.getPlayer(uuid).isReady = isReady;
 }
 
 
