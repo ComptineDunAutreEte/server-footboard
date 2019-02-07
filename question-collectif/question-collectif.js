@@ -12,6 +12,7 @@ class QuestionCollectif {
         this.init();
     }
 
+
     add_ID_A(ID) {
         this.team_A.push(ID);
         return this.team_A.length === 3;
