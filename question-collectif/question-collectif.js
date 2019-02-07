@@ -9,12 +9,14 @@ class QuestionCollectif {
         this.nbr_A = 0;
         this.nbr_B = 0;
         this.right_answers = right_answers;
+        this.map_session = new Map();
         this.init();
     }
 
 
     add_ID_A(_id) {
-        if (this.team_A.includes(_id)) {
+        //this.map_session.set(_id, socket);
+        if (!this.team_A.includes(_id)) {
             this.team_A.push(_id);
         }
         return this.team_A.length === 3;
@@ -22,6 +24,7 @@ class QuestionCollectif {
 
     get_next_ID_from_team_A() {
         let index = this.nbr_A % this.team_A.length;
+        //this.map_session.set(_id, socket)
         this.nbr_A++;
         return this.team_A[index];
     }
