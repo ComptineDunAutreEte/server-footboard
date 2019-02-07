@@ -105,7 +105,10 @@ function question_hanndler_par() {
 function question_collectif_seq(socket) {
     socket.on('ready-seq', message => {
         console.log(message);
-        sendToOne('', socket, 'question-screen'); //test on doit stocker id à la place
+        if (question.add_ID_A(message.uuid)) {
+            sendToOne('', socket, 'question-screen');
+        }
+        //test on doit stocker id à la place
     });
 
     socket.on('question-collectif-seq-answer', message => {
