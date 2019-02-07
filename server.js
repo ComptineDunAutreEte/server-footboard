@@ -53,7 +53,9 @@ let room = {
     question_parrallel: "question-parrallel", //code 30
     question_sequentiel: "question-sequentiel", //code 40
     navigate: "navigation", //code 20
-    ready: "ready"
+    ready: "ready",
+    team_A: "team_A",
+    team_B: "team_B"
 };
 
 function join_rooms(socket) {
@@ -61,6 +63,7 @@ function join_rooms(socket) {
     socket.join(room.question_parrallel);
     socket.join(room.question_sequentiel);
     socket.join(room.ready);
+    socket.join(room.qst_screen);
 }
 
 function socket_server_on(socket) {}
@@ -105,16 +108,27 @@ function question_hanndler_par() {
 function question_collectif_seq(socket) {
     socket.on('ready-seq', message => {
         console.log(message);
-        if (question.add_ID_A(message.uuid)) {
+        if (message.team === 'A') {
             sendToOne('', socket, 'question-screen');
+            if (question.add_ID_A(message.uuid)) {
+                //sendToAll(room.team_A, '', 'question-screen');
+                //let id = question.get_next_ID_from_team_A();
+                // send to all puis 
+                //let p = session.getPlayer(id);
+                session.nextSessionA().session.emit('question-collectif', question.firstQuestion());
+                // sendToOne('', socket, 'question-screen');
+            }
+        } else {
+
         }
+
         //test on doit stocker id à la place
     });
 
     socket.on('question-collectif-seq-answer', message => {
         let quest = question.answer(message.data);
         if (quest !== null) {
-            session.nextSessionA().emit('question-collectif', quest);
+            session.nextSessionA().session.emit('question-collectif', quest);
         } else {
             //terminer envoi sur la table
         }
@@ -216,8 +230,8 @@ io.sockets.on('connection', function(socket) {
             }
 
 
-        /*---------------------------------------------------------------------------------*/
-        /*---------------------------------------------------------------------------------*/
+            /*---------------------------------------------------------------------------------*/
+            /*---------------------------------------------------------------------------------*/
         } else { //cas ou c'est la table
             console.log('ici-table')
             session.table = socket;
@@ -386,12 +400,12 @@ function retrieveSimpleQuestionResponse(socket) {
 
         if (socket === player.session) {
             socket.emit("response-simple-question", {
-                isCorrectPlayerResponse:isCorrectPlayerResponse
+                isCorrectPlayerResponse: isCorrectPlayerResponse
             });
         }
 
 
-        socket.emit("indivQuestion", {msg: isCorrectPlayerResponse});
+        socket.emit("indivQuestion", { msg: isCorrectPlayerResponse });
     });
 }
 
