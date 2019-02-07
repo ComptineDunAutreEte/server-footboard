@@ -15,7 +15,11 @@ var server = http.createServer(function(req, res) {
 
 
 // Chargement de socket.io
-var io = require('socket.io').listen(server);
+var io = require('socket.io').listen(server, {
+    // below are engine.IO options
+    pingInterval: 15000,
+    pingTimeout: 10000
+});
 var session = new Session();
 // Quand un client se connecte, on le note dans la console
 
@@ -110,12 +114,14 @@ function question_collectif_seq(socket) {
         console.log(message);
         if (message.team === 'A') {
             sendToOne('', socket, 'question-screen');
+            // console.log(session.nextSessionA());
+            socket.emit('question-collectif-par', question.firstQuestion());
             if (question.add_ID_A(message.uuid)) {
                 //sendToAll(room.team_A, '', 'question-screen');
                 //let id = question.get_next_ID_from_team_A();
                 // send to all puis 
                 //let p = session.getPlayer(id);
-                session.nextSessionA().session.emit('question-collectif', question.firstQuestion());
+
                 // sendToOne('', socket, 'question-screen');
             }
         } else {

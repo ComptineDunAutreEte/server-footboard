@@ -13,9 +13,9 @@ class QuestionCollectif {
     }
 
 
-    add_ID_A(ID) {
-        if (this.team_A.includes(ÌD)) {
-            this.team_A.push(ID);
+    add_ID_A(_id) {
+        if (this.team_A.includes(_id)) {
+            this.team_A.push(_id);
         }
         return this.team_A.length === 3;
     }

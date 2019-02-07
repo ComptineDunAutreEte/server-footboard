@@ -8,6 +8,7 @@ class Session {
         this.teams = [];
         this.initParty();
         this.table = null;
+        this.indexA = 0;
     }
 
     initParty() {
@@ -30,13 +31,15 @@ class Session {
     reset() {
         this.getTeam('A').players.clear();
         this.getTeam('B').players.clear();
+        this.indexA = 0;
     }
 
     nextSessionA() {
-        let tab = Array.from(this.getTeam('A').players);
+        let tab = Array.from(this.getTeam('A').players.values());
         let socket = tab[this.indexA % tab.length];
+        //console.log(socket);
         this.indexA++;
-        return socket;
+        return socket.session;
     }
 
     getTableSession() {
