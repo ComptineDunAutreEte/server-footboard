@@ -33,7 +33,7 @@ class Session {
     }
 
     nextSessionA() {
-        let tab = Array.from(this.sessionA.values());
+        let tab = Array.from(this.getTeam('A').players);
         let socket = tab[this.indexA % tab.length];
         this.indexA++;
         return socket;
