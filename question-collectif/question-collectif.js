@@ -14,19 +14,20 @@ class QuestionCollectif {
     }
 
 
-    add_ID_A(_id) {
-        //this.map_session.set(_id, socket);
+    add_ID_A(_id, socket) {
+        this.map_session.set(_id, socket);
         if (!this.team_A.includes(_id)) {
             this.team_A.push(_id);
         }
         return this.team_A.length === 3;
     }
 
-    get_next_ID_from_team_A() {
-        let index = this.nbr_A % this.team_A.length;
+    get_next_session_team_A() {
+        let index = this.nbr_A % this.map_session.size;
         //this.map_session.set(_id, socket)
         this.nbr_A++;
-        return this.team_A[index];
+        let id = this.team_A[index];
+        return this.map_session.get(id);
     }
 
     get_next_ID_from_team_B() {
