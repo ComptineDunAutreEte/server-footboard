@@ -37,9 +37,10 @@ function sendToOne(_data, socket, channel, _code = 0) {
     socket.emit(channel, message);
 }
 
-function sendToAll(_data, chanel) { //faut faire une join au préalable
+function sendToAll(room, _data, chanel) { //faut faire une join au préalable
+    console.log(room, chanel);
     let message = getMessage(0, _data, '');
-    io.to(_data).emit(message);
+    io.to(room).emit(chanel, message);
 
 }
 //==================Fin Partie générale===============================
@@ -50,7 +51,7 @@ function sendToAll(_data, chanel) { //faut faire une join au préalable
 
 let room = {
     question_parrallel: "question-parrallel", //code 30
-    question_sequentiel: "question_sequentiel", //code 40
+    question_sequentiel: "question-sequentiel", //code 40
     navigate: "navigation", //code 20
     ready: "ready"
 };
@@ -59,6 +60,7 @@ function join_rooms(socket) {
     socket.join(room.navigate);
     socket.join(room.question_parrallel);
     socket.join(room.question_sequentiel);
+    socket.join(room.ready);
 }
 
 function socket_server_on(socket) {}
@@ -100,14 +102,43 @@ function question_hanndler_par() {
  * tablette send_answer
  * 
  */
+function question_collectif_seq(socket) {
+    socket.on('ready-seq', message => {
+        console.log(message);
+        sendToOne('', socket, 'question-screen'); //test on doit stocker id à la place
+    });
 
+    socket.on('question-collectif-seq-answer', message => {
+        let quest = question.answer(message.data);
+        if (quest !== null) {
+            session.nextSessionA().emit('question-collectif', quest);
+        } else {
+            //terminer envoi sur la table
+        }
+    });
+}
+
+function question_collectif_par(socket) {
+    socket.on('ready-par', message => {
+        //stocker l'ID
+    });
+
+    socket.on('question-collectif-answer', message => {
+        let quest = question.answer(message.data);
+        if (quest !== null) {
+            session.nextSessionA().emit('question-collectif-par', quest);
+        } else {
+            //terminer envoi sur la table
+        }
+    });
+}
 //==================Fin Partie de Long=================================
 
 
 
 
 io.sockets.on('connection', function(socket) {
-    console.log('connected');
+    //console.log('connected');
     socket.on('login', (message) => {
         if (message.type === 'tablet') {
             const data = message.data;
@@ -122,10 +153,27 @@ io.sockets.on('connection', function(socket) {
             if (session.add(player, socket)) {
                 console.log('add========================');
                 join_rooms(socket);
+                question_collectif_seq(socket);
+                sendToOne('Home', socket, 'navigate');
 
-                io.sockets.in(room.navigate).emit('navigate', 'QuestionCollectif');
+                //question_collectif_par(socket);
+                //io.sockets.in(room.navigate).emit('navigate', 'QuestionCollectif');
+                /*fs.readFile('./img_question.png', function(err, data) {
+                    //console.log(data);
+                    //socket.emit('imageConversionByClient', { image: true, buffer: data });
+                    //socket.emit('img', "data:image/png;base64," + data.toString("base64"));
+                    io.sockets.in(room.navigate).emit('question-collectif-img', "data:image/png;base64," + data.toString("base64"));
+                });*/
+
+                socket.on('reset', (reason) => {
+                    //questionv2.ready = 0;
+                    question.reset();
+                    session.reset();
+                });
+
+
                 //io.sockets.in(room.navigate).emit('ready', '');
-                sendToOne('', socket, 'ready', 1);
+                //sendToOne('', socket, 'ready', 1);
                 /*console.log('connected');
                 socket.join('navigate');
                 socket.join('send-question-collectif');
@@ -149,8 +197,22 @@ io.sockets.on('connection', function(socket) {
         } else { //cas ou c'est la table
             console.log('ici-table')
             session.table = socket;
+            socket.on('question-collectif-seq', message => {
+                console.log('table:question-collectif-seq');
+                sendToAll(room.navigate, 'QuestionCollectif', 'navigate');
+                fs.readFile('./img_question.png', function(err, data) {
+                    sendToAll(room.question_sequentiel, "data:image/png;base64," + data.toString("base64"), 'question-collectif-img');
+                    //io.sockets.in(room.question_sequentiel).emit('question-collectif-img', "data:image/png;base64," + data.toString("base64"));
+                });
+                //sendToAll(room.navigate, 'QuestionCollectif', 'navigate');
+            });
+            socket.on('ready-screen-par', message => {
+                console.log('table:ready-screen-par');
+                sendToAll(room.ready, '', 'ready-screen-par');
+            });
+
             //socket.emit('start-question-collectif', '');
-            socket.emit('questionn', '');
+            /*socket.emit('questionn', '');
             socket.on('video-resume-question-collectif', (message) => {
                 io.emit('navigate', 'QuestionCollectif');
                 //socket.emit('img', "data:image/png;base64," + data.toString("base64"));
@@ -158,7 +220,7 @@ io.sockets.on('connection', function(socket) {
                 //console.log('pause-resume');
                 //socket.emit('navigate', 'QuestionCollectifV2');
                 //session.nextSessionA().emit('question-collectif', question.firstQuestion());
-            });
+            });*/
         }
         /*console.log(message);
         if (session.add(message.team, message.id, socket)) {
@@ -180,7 +242,7 @@ io.sockets.on('connection', function(socket) {
         }*/
     });
 
-    socket.on('question-collectif-request', (reason) => {
+    /*socket.on('question-collectif-request', (reason) => {
         console.log(reason);
         socket.emit('navigate', 'QuestionCollectif');
     });
@@ -209,7 +271,7 @@ io.sockets.on('connection', function(socket) {
             //session.nextSessionA().emit('question-collectif', quest);
         }
         //console.log("Reponse ", reason);
-    });
+    });*/
 
 
     // indiv Question Communication
@@ -224,15 +286,9 @@ io.sockets.on('connection', function(socket) {
     isEverybodyReady(socket);
     retrieveSimpleQuestionResponse(socket);
 
-    socket.on('reset', (reason) => {
-        questionv2.ready = 0;
-        console.log('reset');
-        console.log('SIZE ', session.getTeam('A').players.size);
-        session.reset();
-        console.log('SIZE ', session.getTeam('A').players.size);
-    });
 
-    socket.on('loginTable', (reason) => {
+
+    /*socket.on('loginTable', (reason) => {
         console.log('la table est connecté');
         session.setTableSession(socket);
         session.getTableSession().emit('table', session.getTab());
@@ -240,7 +296,7 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('table', (reason) => {
         console.log('la table: ' + reason);
-    });
+    });*/
 
     socket.on('disconnect', (reason) => {
         console.log('disconnected : ' + reason);

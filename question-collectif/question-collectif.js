@@ -4,10 +4,42 @@ class QuestionCollectif {
         this.questions = _questions;
         this.teamA_answers = [];
         this.teamB_answers = [];
+        this.team_A = [];
+        this.team_B = [];
+        this.nbr_A = 0;
+        this.nbr_B = 0;
         this.right_answers = right_answers;
         this.init();
     }
 
+    add_ID_A(ID) {
+        this.team_A.push(ID);
+        return this.team_A.length === 3;
+    }
+
+    get_next_ID_from_team_A() {
+        let index = this.nbr_A % this.team_A.length;
+        this.nbr_A++;
+        return this.team_A[index];
+    }
+
+    get_next_ID_from_team_B() {
+        let index = this.nbr_B % this.team_B.length;
+        this.nbr_B++;
+        return this.team_A[index];
+    }
+
+    reset() {
+        this.team_A = [];
+        this.team_B = [];
+        this.nbr_A = 0;
+        this.nbbr_B = 0;
+    }
+
+    add_ID_B(ID) {
+        this.team_B.push(ID);
+        return this.team_B.length === 3;
+    }
     addQuestion(key, question) {
 
     }
