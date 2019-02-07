@@ -105,7 +105,10 @@ function question_hanndler_par() {
 function question_collectif_seq(socket) {
     socket.on('ready-seq', message => {
         console.log(message);
-        sendToOne('', socket, 'question-screen'); //test on doit stocker id à la place
+        if (question.add_ID_A(message.uuid)) {
+            sendToOne('', socket, 'question-screen');
+        }
+        //test on doit stocker id à la place
     });
 
     socket.on('question-collectif-seq-answer', message => {
@@ -167,11 +170,7 @@ io.sockets.on('connection', function(socket) {
                     io.sockets.in(room.navigate).emit('question-collectif-img', "data:image/png;base64," + data.toString("base64"));
                 });*/
 
-                socket.on('reset', (reason) => {
-                    //questionv2.ready = 0;
-                    question.reset();
-                    session.reset();
-                });
+
 
                 /************************
                  * PARTIE LUTTHY
@@ -213,6 +212,7 @@ io.sockets.on('connection', function(socket) {
                     socket.emit('ask-question-collectif-request-v2', questionv2.situation);
                     questionv2.ready += 1;
                 });*/
+
             }
 
 
@@ -246,6 +246,8 @@ io.sockets.on('connection', function(socket) {
                 //session.nextSessionA().emit('question-collectif', question.firstQuestion());
             });*/
         }
+
+
         /*console.log(message);
         if (session.add(message.team, message.id, socket)) {
             fs.readFile('./img_question.png', function(err, data) {
@@ -264,6 +266,13 @@ io.sockets.on('connection', function(socket) {
         if (session.getTableSession() !== null) {
             session.getTableSession().emit('table', session.getTab());
         }*/
+    });
+
+    socket.on('reset', (reason) => {
+        console.log('reset');
+        //questionv2.ready = 0;
+        question.reset();
+        session.reset();
     });
 
     /*socket.on('question-collectif-request', (reason) => {
