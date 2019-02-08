@@ -154,7 +154,7 @@ function question_collectif_seq(socket) {
         } else {
             //console.log('wait-screen');
             sendToAll(room.team_A, '', 'wait-screen');
-            sendToOne('Home', session.table, 'navigate', 0);
+            sendToOne('', session.table, 'back-to-video', 0);
         }
         console.log('out-wait-screen');
     });
