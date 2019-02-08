@@ -259,7 +259,10 @@ io.sockets.on('connection', function (socket) {
             // MOCK : listening for player request
             socket.on('addPlayerPlease', message => {
                 console.log("player name requested : " + message.data);
-                sendToOne("titi",socket,'returningPlayer',0);
+                const player = new Player();
+                player.pseudo = "titi";
+                player.team = "blue";
+                sendToOne(player,socket,'returningPlayer',0);
             });
 
             //socket.emit('start-question-collectif', '');
