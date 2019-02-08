@@ -70,9 +70,10 @@ function join_rooms(socket, team) {
     socket.join(room.ready);
     socket.join(room.qst_screen);
     if (team === 'A') {
+        console.log('team_A');
         socket.join(room.team_A);
     } else {
-        socket.join(room.team_BB);
+        socket.join(room.team_B);
     }
 
 }
@@ -124,7 +125,7 @@ function question_collectif_seq(socket) {
             sendToOne('', socket, 'question-screen');
             // console.log(session.nextSessionA());
             //socket.emit('question-collectif-par', question.firstQuestion());
-            if (question.add_ID_A(message.uuid, socket)) {
+            if (!question.add_ID_A(message.uuid, socket)) {
                 let sock = question.get_next_session_team_A();
                 console.log('hello');
                 sock.emit('question-collectif-par', question.firstQuestion());
@@ -146,13 +147,16 @@ function question_collectif_seq(socket) {
         console.log(message.data);
         let quest = question.answer(message.data);
         console.log('answer bback ', quest);
-        if (quest !== null) {
+        if (quest !== undefined) {
             let sock = question.get_next_session_team_A();
             sock.emit('question-collectif-par', quest);
             // session.nextSessionA().session.emit('question-collectif', quest);
         } else {
+            //console.log('wait-screen');
             sendToAll(room.team_A, '', 'wait-screen');
+            sendToOne('', session.table, 'back-to-video', 0);
         }
+        console.log('out-wait-screen');
     });
 }
 

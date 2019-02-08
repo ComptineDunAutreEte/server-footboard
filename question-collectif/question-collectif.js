@@ -43,6 +43,7 @@ class QuestionCollectif {
         this.team_B = [];
         this.nbr_A = 0;
         this.nbbr_B = 0;
+        this.map_session.clear();
     }
 
     add_ID_B(ID) {
