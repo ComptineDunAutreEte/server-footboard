@@ -118,6 +118,7 @@ function question_collectif_seq(socket) {
             //socket.emit('question-collectif-par', question.firstQuestion());
             if (question.add_ID_A(message.uuid, socket)) {
                 let sock = question.get_next_session_team_A();
+                console.log('hello');
                 sock.emit('question-collectif-par', question.firstQuestion());
                 //sendToAll(room.team_A, '', 'question-screen');
                 //let id = question.get_next_ID_from_team_A();
