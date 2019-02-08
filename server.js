@@ -21,6 +21,7 @@ var session = new Session();
 
 const Player = require("./model/player");
 const easyQuestions = require('./data/questions/easy');
+const copyQuestions = easyQuestions.slice(0);
 
 //==================Partie générale===============================
 function getMessage(_code = 0, _data = null, type = '') {
@@ -160,6 +161,8 @@ io.sockets.on('connection', function(socket) {
                 join_rooms(socket);
                 question_collectif_seq(socket);
                 sendToOne('Home', socket, 'navigate');
+
+                socket.emit("players-to-table", ["toto", "tutu"]);
 
                 //question_collectif_par(socket);
                 //io.sockets.in(room.navigate).emit('navigate', 'QuestionCollectif');
@@ -352,7 +355,7 @@ function isEverybodyReady(socket) {
             nQuestionCounter++;
             io.emit("ask-simple-question", {
                 isEverybodyReady: true,
-                question: easyQuestions[0],
+                question: getSimpleQuestion(),
                 questionCounter: nQuestionCounter,
                 maxTimer: 15
             });
@@ -360,6 +363,15 @@ function isEverybodyReady(socket) {
             updateUser(uuid, true);
         }
     });
+}
+
+function getSimpleQuestion() {
+    const question = copyQuestions[0];
+    copyQuestions.splice(0, 1);
+
+    console.log(question);
+
+    return question;
 }
 
 function retrieveSimpleQuestionResponse(socket) {
@@ -374,10 +386,12 @@ function retrieveSimpleQuestionResponse(socket) {
 
         easyQuestions.forEach((question) => {
             if (question.id === data.questionId) {
+                console.log("id ok");
                 question.responses.forEach((res) => {
                     if (res.id === data.userResponse && res.isValid) {
+                        console.log("player response is ok");
                         isCorrectPlayerResponse = true;
-                        updateUser(response.uuid, false);
+                        player.isReady = false;
                         player.score += 1;
                     }
                 });
