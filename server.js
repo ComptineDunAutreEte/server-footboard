@@ -265,6 +265,11 @@ io.sockets.on('connection', function (socket) {
                 sendToOne(player,socket,'returningPlayer',0);
             });
 
+            socket.on('sendScores', message => {
+                console.log("scores requested : " + message.data);
+                sendToOne('trois joueurs',socket,'returningScores',0);
+            });
+
             //socket.emit('start-question-collectif', '');
             /*socket.emit('questionn', '');
             socket.on('video-resume-question-collectif', (message) => {
