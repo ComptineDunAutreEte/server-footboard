@@ -111,6 +111,7 @@ function question_hanndler_par() {
  * 
  */
 function question_collectif_seq(socket) {
+
     socket.on('ready-seq', message => {
         console.log(message);
         if (message.team === 'A') {
@@ -144,7 +145,7 @@ function question_collectif_seq(socket) {
             sock.emit('question-collectif-par', quest);
             // session.nextSessionA().session.emit('question-collectif', quest);
         } else {
-            // terminer envoi sur la table
+            sendToAll(room.team_A, '', 'wait-screen');
         }
     });
 }
