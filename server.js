@@ -265,10 +265,12 @@ io.sockets.on('connection', function (socket) {
                 sendToOne(player,socket,'returningPlayer',0);
             });
 
+            // MOCK : listening for scores request
             socket.on('sendScores', message => {
                 console.log("scores requested : " + message.data);
-                sendToOne('trois joueurs',socket,'returningScores',0);
+                sendToOne(["titi","toto","tata"],socket,'returningScores',0);
             });
+            
 
             //socket.emit('start-question-collectif', '');
             /*socket.emit('questionn', '');
