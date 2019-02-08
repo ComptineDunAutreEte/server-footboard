@@ -5,8 +5,8 @@ var question = require('./question-collectif/question-collectif');
 var questionv2 = require('./question-collectif/question-collectif-v2');
 var path = require('path');
 // Chargement du fichier index.html affiché au client
-var server = http.createServer(function (req, res) {
-    fs.readFile('./index.html', 'utf-8', function (error, content) {
+var server = http.createServer(function(req, res) {
+    fs.readFile('./index.html', 'utf-8', function(error, content) {
         res.writeHead(200, { "Content-Type": "text/html" });
         res.end(content);
 
@@ -70,7 +70,7 @@ function join_rooms(socket) {
     socket.join(room.qst_screen);
 }
 
-function socket_server_on(socket) { }
+function socket_server_on(socket) {}
 
 function question_handler_seq() {
 
@@ -115,10 +115,10 @@ function question_collectif_seq(socket) {
         if (message.team === 'A') {
             sendToOne('', socket, 'question-screen');
             // console.log(session.nextSessionA());
-            socket.emit('question-collectif-par', question.firstQuestion());
+            //socket.emit('question-collectif-par', question.firstQuestion());
             if (question.add_ID_A(message.uuid, socket)) {
                 //let sock = question.get_next_session_team_A();
-                //sock.emit('question-collectif-par', question.firstQuestion());
+                sock.emit('question-collectif-par', question.firstQuestion());
                 //sendToAll(room.team_A, '', 'question-screen');
                 //let id = question.get_next_ID_from_team_A();
                 // send to all puis 
@@ -168,7 +168,7 @@ let nQuestionCounter = 0;
 
 
 
-io.sockets.on('connection', function (socket) {
+io.sockets.on('connection', function(socket) {
     //console.log('connected');
     socket.on('login', (message) => {
         if (message.type === 'tablet') {
@@ -250,7 +250,7 @@ io.sockets.on('connection', function (socket) {
             socket.on('question-collectif-seq', message => {
                 console.log('table:question-collectif-seq');
                 sendToAll(room.navigate, 'QuestionCollectif', 'navigate');
-                fs.readFile('./img_question.png', function (err, data) {
+                fs.readFile('./img_question.png', function(err, data) {
                     sendToAll(room.question_sequentiel, "data:image/png;base64," + data.toString("base64"), 'question-collectif-img');
                     //io.sockets.in(room.question_sequentiel).emit('question-collectif-img', "data:image/png;base64," + data.toString("base64"));
                 });
@@ -266,15 +266,15 @@ io.sockets.on('connection', function (socket) {
                 const player = new Player();
                 player.pseudo = "titi";
                 player.team = "blue";
-                sendToOne(player,socket,'returningPlayer',0);
+                sendToOne(player, socket, 'returningPlayer', 0);
             });
 
             // MOCK : listening for scores request
             socket.on('sendScores', message => {
                 console.log("scores requested : " + message.data);
-                sendToOne(["titi","toto","tata"],socket,'returningScores',0);
+                sendToOne(["titi", "toto", "tata"], socket, 'returningScores', 0);
             });
-            
+
 
             //socket.emit('start-question-collectif', '');
             /*socket.emit('questionn', '');
