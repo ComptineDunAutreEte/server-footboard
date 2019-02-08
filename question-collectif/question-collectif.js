@@ -76,8 +76,8 @@ class QuestionCollectif {
                 this.teamB_answers.push(answer);
             }
         }
-        console.log('key: ' + answer.reponse.key);
-        return this.questions.get(answer.reponse.key);
+        //console.log('key: ', answer);
+        return this.questions.get(answer.key);
     }
 
     getTeamAResult() {
