@@ -5,8 +5,8 @@ var question = require('./question-collectif/question-collectif');
 var questionv2 = require('./question-collectif/question-collectif-v2');
 var path = require('path');
 // Chargement du fichier index.html affiché au client
-var server = http.createServer(function(req, res) {
-    fs.readFile('./index.html', 'utf-8', function(error, content) {
+var server = http.createServer(function (req, res) {
+    fs.readFile('./index.html', 'utf-8', function (error, content) {
         res.writeHead(200, { "Content-Type": "text/html" });
         res.end(content);
 
@@ -70,7 +70,7 @@ function join_rooms(socket) {
     socket.join(room.qst_screen);
 }
 
-function socket_server_on(socket) {}
+function socket_server_on(socket) { }
 
 function question_handler_seq() {
 
@@ -168,7 +168,7 @@ let nQuestionCounter = 0;
 
 
 
-io.sockets.on('connection', function(socket) {
+io.sockets.on('connection', function (socket) {
     //console.log('connected');
     socket.on('login', (message) => {
         if (message.type === 'tablet') {
@@ -245,12 +245,12 @@ io.sockets.on('connection', function(socket) {
             /*---------------------------------------------------------------------------------*/
             /*---------------------------------------------------------------------------------*/
         } else { //cas ou c'est la table
-            console.log('ici-table')
+            console.log('ici-table : ' + message.data);
             session.table = socket;
             socket.on('question-collectif-seq', message => {
                 console.log('table:question-collectif-seq');
                 sendToAll(room.navigate, 'QuestionCollectif', 'navigate');
-                fs.readFile('./img_question.png', function(err, data) {
+                fs.readFile('./img_question.png', function (err, data) {
                     sendToAll(room.question_sequentiel, "data:image/png;base64," + data.toString("base64"), 'question-collectif-img');
                     //io.sockets.in(room.question_sequentiel).emit('question-collectif-img', "data:image/png;base64," + data.toString("base64"));
                 });
@@ -260,6 +260,21 @@ io.sockets.on('connection', function(socket) {
                 console.log('table:ready-screen-par');
                 sendToAll(room.ready, '', 'ready-screen-par');
             });
+            // MOCK : listening for player request
+            socket.on('addPlayerPlease', message => {
+                console.log("player name requested : " + message.data);
+                const player = new Player();
+                player.pseudo = "titi";
+                player.team = "blue";
+                sendToOne(player,socket,'returningPlayer',0);
+            });
+
+            // MOCK : listening for scores request
+            socket.on('sendScores', message => {
+                console.log("scores requested : " + message.data);
+                sendToOne(["titi","toto","tata"],socket,'returningScores',0);
+            });
+            
 
             //socket.emit('start-question-collectif', '');
             /*socket.emit('questionn', '');
