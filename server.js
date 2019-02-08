@@ -15,7 +15,11 @@ var server = http.createServer(function(req, res) {
 
 
 // Chargement de socket.io
-var io = require('socket.io').listen(server);
+var io = require('socket.io').listen(server, {
+    // below are engine.IO options
+    pingInterval: 15000,
+    pingTimeout: 10000
+});
 var session = new Session();
 // Quand un client se connecte, on le note dans la console
 
@@ -54,7 +58,9 @@ let room = {
     question_parrallel: "question-parrallel", //code 30
     question_sequentiel: "question-sequentiel", //code 40
     navigate: "navigation", //code 20
-    ready: "ready"
+    ready: "ready",
+    team_A: "team_A",
+    team_B: "team_B"
 };
 
 function join_rooms(socket) {
@@ -62,6 +68,7 @@ function join_rooms(socket) {
     socket.join(room.question_parrallel);
     socket.join(room.question_sequentiel);
     socket.join(room.ready);
+    socket.join(room.qst_screen);
 }
 
 function socket_server_on(socket) {}
@@ -106,18 +113,37 @@ function question_hanndler_par() {
 function question_collectif_seq(socket) {
     socket.on('ready-seq', message => {
         console.log(message);
-        if (question.add_ID_A(message.uuid)) {
+        if (message.team === 'A') {
             sendToOne('', socket, 'question-screen');
+            // console.log(session.nextSessionA());
+            //socket.emit('question-collectif-par', question.firstQuestion());
+            if (question.add_ID_A(message.uuid, socket)) {
+                //let sock = question.get_next_session_team_A();
+                sock.emit('question-collectif-par', question.firstQuestion());
+                //sendToAll(room.team_A, '', 'question-screen');
+                //let id = question.get_next_ID_from_team_A();
+                // send to all puis 
+                //let p = session.getPlayer(id);
+
+                // sendToOne('', socket, 'question-screen');
+            }
+        } else {
+
         }
+
         //test on doit stocker id à la place
     });
 
     socket.on('question-collectif-seq-answer', message => {
+        console.log(message.data);
         let quest = question.answer(message.data);
+        console.log('answer bback ', quest);
         if (quest !== null) {
-            session.nextSessionA().emit('question-collectif', quest);
+            let sock = question.get_next_session_team_A();
+            sock.emit('question-collectif-par', quest);
+            // session.nextSessionA().session.emit('question-collectif', quest);
         } else {
-            //terminer envoi sur la table
+            // terminer envoi sur la table
         }
     });
 }
@@ -219,10 +245,10 @@ io.sockets.on('connection', function(socket) {
             }
 
 
-        /*---------------------------------------------------------------------------------*/
-        /*---------------------------------------------------------------------------------*/
+            /*---------------------------------------------------------------------------------*/
+            /*---------------------------------------------------------------------------------*/
         } else { //cas ou c'est la table
-            console.log('ici-table')
+            console.log('ici-table : ' + message.data);
             session.table = socket;
             socket.on('question-collectif-seq', message => {
                 console.log('table:question-collectif-seq');
@@ -237,6 +263,21 @@ io.sockets.on('connection', function(socket) {
                 console.log('table:ready-screen-par');
                 sendToAll(room.ready, '', 'ready-screen-par');
             });
+            // MOCK : listening for player request
+            socket.on('addPlayerPlease', message => {
+                console.log("player name requested : " + message.data);
+                const player = new Player();
+                player.pseudo = "titi";
+                player.team = "blue";
+                sendToOne(player, socket, 'returningPlayer', 0);
+            });
+
+            // MOCK : listening for scores request
+            socket.on('sendScores', message => {
+                console.log("scores requested : " + message.data);
+                sendToOne(["titi", "toto", "tata"], socket, 'returningScores', 0);
+            });
+
 
             //socket.emit('start-question-collectif', '');
             /*socket.emit('questionn', '');
@@ -400,12 +441,12 @@ function retrieveSimpleQuestionResponse(socket) {
 
         if (socket === player.session) {
             socket.emit("response-simple-question", {
-                isCorrectPlayerResponse:isCorrectPlayerResponse
+                isCorrectPlayerResponse: isCorrectPlayerResponse
             });
         }
 
 
-        socket.emit("indivQuestion", {msg: isCorrectPlayerResponse});
+        socket.emit("indivQuestion", { msg: isCorrectPlayerResponse });
     });
 }
 

@@ -9,19 +9,27 @@ class QuestionCollectif {
         this.nbr_A = 0;
         this.nbr_B = 0;
         this.right_answers = right_answers;
+        this.map_session = new Map();
         this.init();
     }
 
 
-    add_ID_A(ID) {
-        this.team_A.push(ID);
+    add_ID_A(_id, socket) {
+        this.map_session.set(_id, socket);
+        if (!this.team_A.includes(_id)) {
+            this.team_A.push(_id);
+        }
         return this.team_A.length === 3;
     }
 
-    get_next_ID_from_team_A() {
-        let index = this.nbr_A % this.team_A.length;
+    get_next_session_team_A() {
+        let index = this.nbr_A % this.map_session.size;
+        // console.log('nbr session: ' + index);
+        //this.map_session.set(_id, socket)
         this.nbr_A++;
-        return this.team_A[index];
+        let id = this.team_A[index];
+        console.log(id);
+        return this.map_session.get(id);
     }
 
     get_next_ID_from_team_B() {
@@ -38,7 +46,9 @@ class QuestionCollectif {
     }
 
     add_ID_B(ID) {
-        this.team_B.push(ID);
+        if (this.team_B.includes(ÌD)) {
+            this.team_B.push(ID);
+        }
         return this.team_B.length === 3;
     }
     addQuestion(key, question) {
@@ -60,13 +70,14 @@ class QuestionCollectif {
     answer(answer) { //object :team, pseudo, question, answer
         if (answer) {
             console.log("\n\n\n Répond: ", answer, "\n\n\n");
-            if (answer.team === 'Team_A') {
+            if (answer.team === 'A') {
                 this.teamA_answers.push(answer);
-            } else if (answer.team === 'Team_B') {
+            } else if (answer.team === 'B') {
                 this.teamB_answers.push(answer);
             }
         }
-        return this.questions.get(answer.answer.key);
+        //console.log('key: ', answer);
+        return this.questions.get(answer.key);
     }
 
     getTeamAResult() {
