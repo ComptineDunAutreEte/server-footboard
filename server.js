@@ -63,12 +63,18 @@ let room = {
     team_B: "team_B"
 };
 
-function join_rooms(socket) {
+function join_rooms(socket, team) {
     socket.join(room.navigate);
     socket.join(room.question_parrallel);
     socket.join(room.question_sequentiel);
     socket.join(room.ready);
     socket.join(room.qst_screen);
+    if (team === 'A') {
+        socket.join(room.team_A);
+    } else {
+        socket.join(room.team_BB);
+    }
+
 }
 
 function socket_server_on(socket) {}
@@ -186,7 +192,7 @@ io.sockets.on('connection', function(socket) {
 
             if (session.add(player, socket)) {
                 console.log('add========================');
-                join_rooms(socket);
+                join_rooms(socket, player.team);
                 question_collectif_seq(socket);
                 sendToOne('Home', socket, 'navigate');
 
