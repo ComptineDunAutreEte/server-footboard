@@ -24,9 +24,11 @@ class QuestionCollectif {
 
     get_next_session_team_A() {
         let index = this.nbr_A % this.map_session.size;
+        // console.log('nbr session: ' + index);
         //this.map_session.set(_id, socket)
         this.nbr_A++;
         let id = this.team_A[index];
+        console.log(id);
         return this.map_session.get(id);
     }
 
@@ -68,13 +70,14 @@ class QuestionCollectif {
     answer(answer) { //object :team, pseudo, question, answer
         if (answer) {
             console.log("\n\n\n Répond: ", answer, "\n\n\n");
-            if (answer.team === 'Team_A') {
+            if (answer.team === 'A') {
                 this.teamA_answers.push(answer);
-            } else if (answer.team === 'Team_B') {
+            } else if (answer.team === 'B') {
                 this.teamB_answers.push(answer);
             }
         }
-        return this.questions.get(answer.answer.key);
+        console.log('key: ' + answer.reponse.key);
+        return this.questions.get(answer.reponse.key);
     }
 
     getTeamAResult() {

@@ -115,10 +115,10 @@ function question_collectif_seq(socket) {
         if (message.team === 'A') {
             sendToOne('', socket, 'question-screen');
             // console.log(session.nextSessionA());
-
+            socket.emit('question-collectif-par', question.firstQuestion());
             if (question.add_ID_A(message.uuid, socket)) {
-                let sock = question.get_next_session_team_A();
-                sock.emit('question-collectif-par', question.firstQuestion());
+                //let sock = question.get_next_session_team_A();
+                //sock.emit('question-collectif-par', question.firstQuestion());
                 //sendToAll(room.team_A, '', 'question-screen');
                 //let id = question.get_next_ID_from_team_A();
                 // send to all puis 
@@ -134,11 +134,15 @@ function question_collectif_seq(socket) {
     });
 
     socket.on('question-collectif-seq-answer', message => {
+        console.log(message.data);
         let quest = question.answer(message.data);
+        console.log('answer bback ', quest);
         if (quest !== null) {
-            session.nextSessionA().session.emit('question-collectif', quest);
+            let sock = question.get_next_session_team_A();
+            sock.emit('question-collectif-par', quest);
+            // session.nextSessionA().session.emit('question-collectif', quest);
         } else {
-            //terminer envoi sur la table
+            // terminer envoi sur la table
         }
     });
 }
@@ -423,4 +427,3 @@ function updateUser(uuid, isReady) {
 
 
 server.listen(process.env.PORT || 4000);
-//
