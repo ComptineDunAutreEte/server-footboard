@@ -63,12 +63,19 @@ let room = {
     team_B: "team_B"
 };
 
-function join_rooms(socket) {
+function join_rooms(socket, team) {
     socket.join(room.navigate);
     socket.join(room.question_parrallel);
     socket.join(room.question_sequentiel);
     socket.join(room.ready);
     socket.join(room.qst_screen);
+    if (team === 'A') {
+        console.log('team_A');
+        socket.join(room.team_A);
+    } else {
+        socket.join(room.team_B);
+    }
+
 }
 
 function socket_server_on(socket) {}
@@ -111,6 +118,7 @@ function question_hanndler_par() {
  * 
  */
 function question_collectif_seq(socket) {
+
     socket.on('ready-seq', message => {
         console.log(message);
         if (message.team === 'A') {
@@ -139,13 +147,16 @@ function question_collectif_seq(socket) {
         console.log(message.data);
         let quest = question.answer(message.data);
         console.log('answer bback ', quest);
-        if (quest !== null) {
+        if (quest !== undefined) {
             let sock = question.get_next_session_team_A();
             sock.emit('question-collectif-par', quest);
             // session.nextSessionA().session.emit('question-collectif', quest);
         } else {
-            // terminer envoi sur la table
+            //console.log('wait-screen');
+            sendToAll(room.team_A, '', 'wait-screen');
+            sendToOne('', session.table, 'back-to-video', 0);
         }
+        console.log('out-wait-screen');
     });
 }
 
@@ -186,7 +197,7 @@ io.sockets.on('connection', function(socket) {
 
             if (session.add(player, socket)) {
                 console.log('add========================');
-                join_rooms(socket);
+                join_rooms(socket, player.team);
                 question_collectif_seq(socket);
                 sendToOne('Home', socket, 'navigate');
 
