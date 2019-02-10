@@ -168,7 +168,8 @@ function question_collectif_par(socket) {
 
 let nQuestionCounter = 0;
 
-
+const DashboardService = require("./services/dashboard.service");
+const dashboardService = new DashboardService();
 
 io.sockets.on('connection', function(socket) {
     //console.log('connected');
@@ -215,6 +216,17 @@ io.sockets.on('connection', function(socket) {
 
                 isEverybodyReady(socket);
                 retrieveSimpleQuestionResponse(socket);
+
+                socket.on("dashboard-request", (response) => {
+                    if (response.data.request === true) {
+                        let dashboardDatas = dashboardService.retrieveDashboardStatistics(
+                            response.uiid,
+                            session.getTeam(session.getPlayer(response.uuid).team).players.size
+                        );
+
+                        socket.emit("dashboard-datas", dashboardDatas);
+                    }
+                });
 
                 /************************
                  * FIN PARTIE LUTTHY
