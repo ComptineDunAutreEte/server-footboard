@@ -23,10 +23,6 @@ var io = require('socket.io').listen(server, {
 var session = new Session();
 // Quand un client se connecte, on le note dans la console
 
-const Player = require("./model/player");
-const easyQuestions = require('./data/questions/easy');
-const copyQuestions = easyQuestions.slice(0);
-
 //==================Partie générale===============================
 function getMessage(_code = 0, _data = null, type = '') {
     let message = {
@@ -176,11 +172,14 @@ function question_collectif_par(socket) {
 }
 //==================Fin Partie de Long=================================
 
-
 let nQuestionCounter = 0;
-
+const playersResponsesInformations = [];
+const Player = require("./model/player");
+const simplesQuestions = require('./data/simplesQuestions');
+const copyQuestions = simplesQuestions.slice(0);
 const DashboardService = require("./services/dashboard.service");
 const dashboardService = new DashboardService();
+const UserResponseInformations = require("./model/user-response-informations");
 
 io.sockets.on('connection', function(socket) {
     //console.log('connected');
@@ -227,17 +226,7 @@ io.sockets.on('connection', function(socket) {
 
                 isEverybodyReady(socket);
                 retrieveSimpleQuestionResponse(socket);
-
-                socket.on("dashboard-request", (response) => {
-                    if (response.data.request === true) {
-                        let dashboardDatas = dashboardService.retrieveDashboardStatistics(
-                            response.uiid,
-                            session.getTeam(session.getPlayer(response.uuid).team).players.size
-                        );
-
-                        socket.emit("dashboard-datas", dashboardDatas);
-                    }
-                });
+                retrieveDashboardDatas(socket);
 
                 /************************
                  * FIN PARTIE LUTTHY
@@ -445,16 +434,21 @@ function retrieveSimpleQuestionResponse(socket) {
         const data = response.data;
 
         const userResponseTime = data.userResponseTime;
-        let isCorrectPlayerResponse = false;
 
         const player = session.getPlayer(response.uuid);
+        const playerResponse = new UserResponseInformations();
+        playerResponse.playerUuid = response.uuid;
+        playerResponse.questionId = data.questionId;
+        playerResponse.responseId = data.userResponse;
+        playerResponse.responseTime = userResponseTime;
 
-        easyQuestions.forEach((question) => {
+        let isCorrectPlayerResponse = false;
+
+        simplesQuestions.forEach((question) => {
             if (question.id === data.questionId) {
-                console.log("id ok");
+                playerResponse.category = question.category;
                 question.responses.forEach((res) => {
                     if (res.id === data.userResponse && res.isValid) {
-                        console.log("player response is ok");
                         isCorrectPlayerResponse = true;
                         player.isReady = false;
                         player.score += 1;
@@ -462,6 +456,10 @@ function retrieveSimpleQuestionResponse(socket) {
                 });
             }
         });
+
+        playerResponse.isGoodResponse = isCorrectPlayerResponse;
+
+        playersResponsesInformations.push(playerResponse);
 
         if (socket === player.session) {
             socket.emit("response-simple-question", {
@@ -471,6 +469,25 @@ function retrieveSimpleQuestionResponse(socket) {
 
 
         socket.emit("indivQuestion", { msg: isCorrectPlayerResponse });
+    });
+}
+
+function retrieveDashboardDatas(socket) {
+    socket.on("dashboard-request", (response) => {
+        if (response.data.request === true) {
+            /*let dashboardDatas = dashboardService.retrieveRandomDashboardStatistics(
+                response.uiid,
+                session.getTeam(session.getPlayer(response.uuid).team).players.size
+            );*/
+
+            const dashboardDatas = dashboardService.retrieveDashboardStatistics(
+                response.uuid, playersResponsesInformations,
+                session.getTeam(session.getPlayer(response.uuid).team).players.size
+            );
+
+            console.log(dashboardDatas);
+            socket.emit("dashboard-datas", dashboardDatas);
+        }
     });
 }
 

@@ -1,7 +1,6 @@
-const categories = require("../../model/categories");
-const levels = require("../../model/levels");
+const categories = require("../model/categories");
 
-const easyQuestions = [
+const simplesQuestions = [
     {
         id: 0,
         category: categories.cultureG,
@@ -91,4 +90,4 @@ const easyQuestions = [
     }
 ];
 
-module.exports = easyQuestions;
+module.exports = simplesQuestions;

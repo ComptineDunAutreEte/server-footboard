@@ -11,18 +11,45 @@ class DashboardService {
         this.playersNumber += 1;
     }
 
-    retrieveDashboardStatistics(uuid, teamPlayers) {
-
-        console.log("teamPlayers", teamPlayers);
+    retrieveDashboardStatistics(uuid, playersResponsesInformations, teamPlayers) {
 
         const userResponsesService = new UserResponseInformationsService();
-        const userResponses = userResponsesService.createResponses();
-        const generalResponses = userResponsesService.createResponses(userResponses.length);
+        const userResponses = [];
+        const generalResponses = userResponsesService.createRandomResponses(playersResponsesInformations.length);
 
         const teamInformationsService = new TeamInformationsService(teamPlayers);
 
-        const aResponses = teamInformationsService.createInformations();
-        const bResponses = teamInformationsService.createInformations(aResponses.length);
+        const aResponses = teamInformationsService.createRandomInformations();
+        const bResponses = teamInformationsService.createRandomInformations(aResponses.length);
+
+        playersResponsesInformations.forEach((playerResponse) => {
+            if (playerResponse.playerUuid === uuid) {
+                userResponses.push(playerResponse);
+            }
+        });
+
+        return {
+            perso: {
+                userResponses: userResponses,
+                generalResponses: generalResponses
+            },
+            team: {
+                aResponses: aResponses,
+                bResponses: bResponses
+            }
+        };
+
+    }
+
+    retrieveRandomDashboardStatistics(uuid, teamPlayers) {
+        const userResponsesService = new UserResponseInformationsService();
+        const userResponses = userResponsesService.createRandomResponses();
+        const generalResponses = userResponsesService.createRandomResponses(userResponses.length);
+
+        const teamInformationsService = new TeamInformationsService(teamPlayers);
+
+        const aResponses = teamInformationsService.createRandomInformations();
+        const bResponses = teamInformationsService.createRandomInformations(aResponses.length);
 
 
         return {

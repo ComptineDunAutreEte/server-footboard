@@ -7,7 +7,7 @@ class TeamInformationsService {
         this.playersNumber = playersNumber;
     }
 
-    createInformations(nResponses = null) {
+    createRandomInformations(nResponses = null) {
         const teamInfos = [];
 
         if (!nResponses) {
