@@ -161,17 +161,21 @@ function question_collectif_seq(socket) {
 }
 
 function question_collectif_par(socket) {
+    console.log('question_collectif_par');
     socket.on('ready-par', message => {
+        console.log('ready-par');
+        socket.emit('ask-question-collectif-request-v2', questionv2.situation);
+        socket.emit('answers-question-collectif-request-v2', questionv2.answers[0]);
+
         //stocker l'ID
     });
 
-    socket.on('question-collectif-answer', message => {
-        let quest = question.answer(message.data);
-        if (quest !== null) {
-            session.nextSessionA().emit('question-collectif-par', quest);
-        } else {
-            //terminer envoi sur la table
+    socket.on('answer-par', message => {
+        if (message.data.moveTo !== null) {
+            message.data.uuid = message.uuid;
+            sendToAll(room.team_A, message.data, 'moveTo');
         }
+        console.log(message);
     });
 }
 //==================Fin Partie de Long=================================
@@ -198,9 +202,13 @@ io.sockets.on('connection', function(socket) {
                 console.log('add========================');
                 join_rooms(socket, player.team);
                 question_collectif_seq(socket);
+                question_collectif_par(socket);
                 sendToOne('Home', socket, 'navigate');
 
-                socket.emit("players-to-table", ["toto", "tutu"]);
+                //socket.emit("players-to-table", ["toto", "tutu"]);
+                if (session.table !== null) {
+                    sendToOne({ pseudo: player.pseudo, team: player.team }, session.table, 'listen-user-login');
+                }
 
                 //question_collectif_par(socket);
                 //io.sockets.in(room.navigate).emit('navigate', 'QuestionCollectif');
