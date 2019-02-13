@@ -21,13 +21,6 @@ class Session {
         this.teams.push(teamB);
     }
 
-
-
-    estCompletA() {
-        console.log("estcomplet", (this.sessionA.size === 3));
-        return this.sessionA.size === 3;
-    }
-
     reset() {
         this.getTeam('A').players.clear();
         this.getTeam('B').players.clear();
@@ -42,18 +35,6 @@ class Session {
         return socket.session;
     }
 
-    getTableSession() {
-        return this.table;
-    }
-
-    setTableSession(socket) {
-        this.table = socket;
-    }
-
-    getSession(team) {
-        return this.sessions.get(team);
-    }
-
     setJSON(size, team, pseudo) {
         if (size >= 0 && size < 3) {
             if (team === 'A') {
@@ -62,10 +43,6 @@ class Session {
                 this.tab[size].B = pseudo;
             }
         }
-    }
-
-    getTab() {
-        return this.tab;
     }
 
     add(player, socket) {
@@ -104,16 +81,13 @@ class Session {
                 if (player.uuid === uuid) {
                     selectedPlayer = player;
                 }
-            })
+            });
         });
 
         return selectedPlayer;
     }
 
     remove(pseudo, team) {
-
-
-
         let map = this.sessions.get(team);
         if (map) {
             let size = Array.from(map.keys()).indexOf(1);
