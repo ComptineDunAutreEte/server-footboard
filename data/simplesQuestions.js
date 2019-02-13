@@ -4,7 +4,6 @@ const simplesQuestions = [
     {
         id: 0,
         category: categories.cultureG,
-        type: "",
         question: "Quelles sont les dimentions des cages ?",
         illustration: null,
         responses: [
@@ -28,12 +27,12 @@ const simplesQuestions = [
                 response: "Largeur : 7,83m Hauteur : 2,6m",
                 isValid: false,
             },
-        ]
+        ],
+        anecdote: "L'histoire du foot a commencé en 1863 en Angleterre. Les anglais ayant pour unité de mesure le yard et le pied, ils ont décidé que les cages mesureraient 8 yards de largeur, soit 7,32m, et 8 pieds de hauteur, soit 2,44m."
     },
     {
         id: 1,
         category: categories.cultureG,
-        type: "",
         question: "Qui a remporté le championnat de France de Ligue 1 au cours de la saison 1999/2000 ?",
         illustration: null,
         responses: [
@@ -57,12 +56,12 @@ const simplesQuestions = [
                 response: "Bordeaux",
                 isValid: false
             }
-        ]
+        ],
+        anecdote: null
     },
     {
         id: 2,
         category: categories.cultureG,
-        type: "",
         question: "En quelle année le PSG a t'il remporté la coupe des vainqueurs de coupes ?",
         illustration: null,
         responses: [
@@ -86,7 +85,8 @@ const simplesQuestions = [
                 response: "1996",
                 isValid: false
             }
-        ]
+        ],
+        anecdote: null,
     }
 ];
 

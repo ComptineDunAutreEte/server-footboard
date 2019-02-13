@@ -429,6 +429,7 @@ function getSimpleQuestion() {
 }
 
 function retrieveSimpleQuestionResponse(socket) {
+    console.log("on ask simple question");
     socket.on("ask-simple-question", (response) => {
         console.log("question", response);
         const data = response.data;
@@ -481,7 +482,8 @@ function retrieveDashboardDatas(socket) {
             );*/
 
             const dashboardDatas = dashboardService.retrieveDashboardStatistics(
-                response.uuid, playersResponsesInformations,
+                response.uuid,
+                playersResponsesInformations,
                 session.getTeam(session.getPlayer(response.uuid).team).players.size
             );
 
