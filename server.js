@@ -169,12 +169,8 @@ function question_collectif_par(socket) {
     number++;
     socket.on('answered', message => {
         console.log(message);
-        if (message.data.moveTo !== null) {
-            message.data.uuid = message.uuid;
-            questionv2.answer(message, io, session.table);
-            sendToAll(room.team_A, message.data, 'moveTo');
-        }
-
+        questionv2.answer(message, io, session.table);
+        sendToAll(room.team_A, message.data, 'moveTo');
     });
 }
 //==================Fin Partie de Long=================================
