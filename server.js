@@ -169,8 +169,8 @@ function question_collectif_par(socket) {
     number++;
     socket.on('answered', message => {
         console.log(message);
-        questionv2.answer(message, io, session.table);
         sendToAll(room.team_A, message.data, 'moveTo');
+        questionv2.answer(message, io, session.table);
     });
 }
 //==================Fin Partie de Long=================================

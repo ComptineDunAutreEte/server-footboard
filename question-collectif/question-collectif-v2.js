@@ -32,7 +32,7 @@ class QuestionCollectifV2 {
             //all-answered
             io.to('team_A').emit('wait-for-others', 'Veuillez attendre l\'équipe Adverse');
         }
-        if (this.sessionB.length === this.sessionB.length) {
+        if (this.answer_B.length === this.sessionB.length) {
             this.ready[1] = true;
             if (this.sessionB.length > 0) {
                 //io.to('team_B').emit('all-answered', '');
