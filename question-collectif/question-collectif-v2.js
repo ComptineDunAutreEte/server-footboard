@@ -50,6 +50,9 @@ class QuestionCollectifV2 {
         for (let i = 0; i < this.sessionA.length; i++) {
             this.sessionA[i].emit('answers', this.answers[i]);
         }
+        for (let i = 0; i < this.sessionB.length; i++) {
+            this.sessionB[i].emit('answers', this.answers[i]);
+        }
     }
 
     reset() {
