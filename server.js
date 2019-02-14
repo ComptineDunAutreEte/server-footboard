@@ -13,7 +13,7 @@ var server = http.createServer(function(req, res) {
     });
 });
 
-
+var number = 0;
 // Chargement de socket.io
 var io = require('socket.io').listen(server, {
     // below are engine.IO options
@@ -161,11 +161,12 @@ function question_collectif_par(socket) {
     socket.on('ready-par', message => {
         console.log('ready-par');
         socket.emit('ask-question-collectif-request-v2', questionv2.situation);
-        socket.emit('answers-question-collectif-request-v2', questionv2.answers[0]);
+        socket.emit('answers-question-collectif-request-v2', questionv2.answers[number]);
 
+        //for(session )
         //stocker l'ID
     });
-
+    number++;
     socket.on('answer-par', message => {
         if (message.data.moveTo !== null) {
             message.data.uuid = message.uuid;
@@ -204,7 +205,7 @@ io.sockets.on('connection', function(socket) {
                 question_collectif_seq(socket);
                 question_collectif_par(socket);
                 sendToOne('Home', socket, 'navigate');
-
+                questionv2.addSession(socket, player);
                 //socket.emit("players-to-table", ["toto", "tutu"]);
                 if (session.table !== null) {
                     sendToOne({ pseudo: player.pseudo, team: player.team }, session.table, 'listen-user-login');
@@ -271,6 +272,10 @@ io.sockets.on('connection', function(socket) {
         } else { //cas ou c'est la table
             console.log('ici-table : ' + message.data);
             session.table = socket;
+
+
+
+            //===================QUESTION SEQ===================
             socket.on('question-collectif-seq', message => {
                 console.log('table:question-collectif-seq');
                 sendToAll(room.navigate, 'QuestionCollectif', 'navigate');
@@ -280,10 +285,30 @@ io.sockets.on('connection', function(socket) {
                 });
                 //sendToAll(room.navigate, 'QuestionCollectif', 'navigate');
             });
+
             socket.on('ready-screen-par', message => {
                 console.log('table:ready-screen-par');
                 sendToAll(room.ready, '', 'ready-screen-par');
             });
+
+            //===================QUESTION PAR=====================
+
+            socket.on('question-collectif-par', message => {
+                console.log('table:question-collectif-par');
+                sendToAll(room.navigate, 'QuestionCollectifV2', 'navigate');
+                sendToAll(room.question_parrallel, questionv2.situation, 'situation');
+                questionv2.send_answer();
+                //send answer lot of thing to do
+                //sendToAll(room.navigate, 'QuestionCollectif', 'navigate');
+            });
+            socket.on('ready-screen', message => {
+                console.log('table:ready-screen');
+                sendToAll(room.ready, '', 'ready-screen');
+            });
+
+            //======================================================
+
+
             // MOCK : listening for player request
             socket.on('addPlayerPlease', message => {
                 console.log("player name requested : " + message.data);

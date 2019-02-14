@@ -3,6 +3,21 @@ class QuestionCollectifV2 {
         this.situation = situation;
         this.answers = answers;
         this.ready = 0;
+        this.sessionA = [];
+        this.sessionB = [];
+    }
+    addSession(socket, player) {
+        if (player.team === 'A') {
+            this.sessionA.push(socket);
+        } else {
+            this.sessionB.push(socket);
+        }
+    }
+
+    send_answer() {
+        for (let i = 0; i < this.sessionA.length; i++) {
+            this.sessionA[i].emit('answers', this.answers[i]);
+        }
     }
 }
 
