@@ -2,15 +2,47 @@ class QuestionCollectifV2 {
     constructor(situation, answers) {
         this.situation = situation;
         this.answers = answers;
-        this.ready = 0;
+        this.ready = [false, false];
         this.sessionA = [];
         this.sessionB = [];
+        this.team_map = new Map();
+
+        this.answer_A = [];
+        this.answer_B = [];
     }
     addSession(socket, player) {
+        this.team_map.set(player.uuid, player.team);
         if (player.team === 'A') {
             this.sessionA.push(socket);
         } else {
             this.sessionB.push(socket);
+        }
+    }
+
+    answer(message, io, table) {
+        let team = this.team_map.get(message.uuid);
+        if (team === 'A') {
+            this.answer_A.push(message.data);
+        } else {
+            this.answer_B.push(message.data);
+        }
+
+        if (this.answer_A.length === this.sessionA.length) {
+            this.ready[0] = true;
+            //all-answered
+            io.to('team_A').emit('wait-for-others', 'Veuillez attendre l\'équipe Adverse');
+        }
+        if (this.sessionB.length === this.sessionB.length) {
+            this.ready[1] = true;
+            if (this.sessionB.length > 0) {
+                //io.to('team_B').emit('all-answered', '');
+                //send all-answer
+                io.to('team_B').emit('wait-for-others', 'Veuillez attendre l\'équipe Adverse');
+            }
+        }
+
+        if (this.ready[0] && this.ready[1]) {
+            io.to('question-parrallel').emit('all-answered', '');
         }
     }
 
@@ -23,6 +55,7 @@ class QuestionCollectifV2 {
     reset() {
         this.sessionA = [];
         this.sessionB = [];
+        this.ready = [false, false];
     }
 }
 

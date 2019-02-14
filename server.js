@@ -273,7 +273,7 @@ io.sockets.on('connection', function(socket) {
         } else { //cas ou c'est la table
             console.log('ici-table : ' + message.data);
             session.table = socket;
-
+            socket.join(room.question_parrallel);
 
 
             //===================QUESTION SEQ===================
