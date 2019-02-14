@@ -169,7 +169,12 @@ function question_collectif_par(socket) {
     number++;
     socket.on('answered', message => {
         console.log(message);
-        sendToAll(room.team_A, message.data, 'moveTo');
+        if (message.team === 'B') {
+            sendToAll(room.team_B, message.data, 'moveTo');
+        } else {
+            sendToAll(room.team_A, message.data, 'moveTo');
+        }
+
         questionv2.answer(message, io, session.table);
     });
 }

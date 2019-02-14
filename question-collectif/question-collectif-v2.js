@@ -20,8 +20,8 @@ class QuestionCollectifV2 {
     }
 
     answer(message, io, table) {
-        let team = this.team_map.get(message.uuid);
-        if (team === 'A') {
+        //let team = this.team_map.get(message.uuid);
+        if (message.team === 'A') {
             this.answer_A.push(message.data);
         } else {
             this.answer_B.push(message.data);
@@ -51,6 +51,7 @@ class QuestionCollectifV2 {
             this.sessionA[i].emit('answers', this.answers[i]);
         }
         for (let i = 0; i < this.sessionB.length; i++) {
+            console.log('B_answer');
             this.sessionB[i].emit('answers', this.answers[i]);
         }
     }
