@@ -167,12 +167,13 @@ function question_collectif_par(socket) {
         //stocker l'ID
     });
     number++;
-    socket.on('answer-par', message => {
+    socket.on('answered', message => {
+        console.log(message);
         if (message.data.moveTo !== null) {
             message.data.uuid = message.uuid;
             sendToAll(room.team_A, message.data, 'moveTo');
         }
-        console.log(message);
+
     });
 }
 //==================Fin Partie de Long=================================
@@ -328,8 +329,8 @@ io.sockets.on('connection', function(socket) {
                 console.log(msg.data);
                 if (msg.data === "ready") {
                     setTimeout(() => {
-                        sendToOne({ isReady: true },socket,"waitingScreen",0);
-                    },3000);
+                        sendToOne({ isReady: true }, socket, "waitingScreen", 0);
+                    }, 3000);
                 }
             });
 
@@ -372,6 +373,7 @@ io.sockets.on('connection', function(socket) {
         console.log('reset');
         //questionv2.ready = 0;
         question.reset();
+        questionv2.reset();
         session.reset();
     });
 

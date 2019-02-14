@@ -19,6 +19,11 @@ class QuestionCollectifV2 {
             this.sessionA[i].emit('answers', this.answers[i]);
         }
     }
+
+    reset() {
+        this.sessionA = [];
+        this.sessionB = [];
+    }
 }
 
 
