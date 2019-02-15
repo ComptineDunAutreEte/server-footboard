@@ -180,6 +180,11 @@ const copyQuestions = simplesQuestions.slice(0);
 const DashboardService = require("./services/dashboard.service");
 const dashboardService = new DashboardService();
 const UserResponseInformations = require("./model/user-response-informations");
+const GameService = require("./services/game.service");
+const gameService = new GameService();
+const playersTime = [];
+let playersNumber = 0;
+const isAllPlayersResponded = false;
 
 io.sockets.on('connection', function(socket) {
     //console.log('connected');
@@ -195,6 +200,7 @@ io.sockets.on('connection', function(socket) {
             player.level = data.userLevel;
 
             if (session.add(player, socket)) {
+                playersNumber += 1;
                 console.log('add========================');
                 join_rooms(socket, player.team);
                 question_collectif_seq(socket);
@@ -290,6 +296,20 @@ io.sockets.on('connection', function(socket) {
                 console.log("scores requested : " + message.data);
                 sendToOne(["titi", "toto", "tata"], socket, 'returningScores', 0);
             });
+
+            if (playersNumber > 0 && playersTime.length === playersNumber) {
+                console.log("send playersTime")
+                const datas = gameService.retrievePlayerOrderWhichPlay(playersTime);
+                socket.emit("indivQuestionResponse", {
+                    data: datas
+                });
+
+                socket.on("indivQuestionTest", (response) => {
+                    if (response.data === true) {
+                        playersTime.splice(0, playersTime.length);
+                    }
+                });
+            }
 
 
             //socket.emit('start-question-collectif', '');
@@ -460,6 +480,13 @@ function retrieveSimpleQuestionResponse(socket) {
 
         playerResponse.isGoodResponse = isCorrectPlayerResponse;
 
+        playersTime.push({
+            uuid: player.uuid,
+            pseudo: player.pseudo,
+            team: player.team,
+            responseTime: userResponseTime
+        });
+
         playersResponsesInformations.push(playerResponse);
 
         if (socket === player.session) {
@@ -467,9 +494,6 @@ function retrieveSimpleQuestionResponse(socket) {
                 isCorrectPlayerResponse: isCorrectPlayerResponse
             });
         }
-
-
-        socket.emit("indivQuestion", { msg: isCorrectPlayerResponse });
     });
 }
 
