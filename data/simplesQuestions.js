@@ -87,7 +87,94 @@ const simplesQuestions = [
             }
         ],
         anecdote: null,
-    }
+    },
+    {
+        id: 3,
+        category: categories.cultureG,
+        question: "Quel était le score du match d'ouverture de la Coupe du Monde en 2018 entre la Russie et l'Arabie Saoudite ?",
+        illustration: null,
+        responses: [
+            {
+                id: 1,
+                response: "2-0",
+                isValid: false,
+            },
+            {
+                id: 2,
+                response: "3-1",
+                isValid: false,
+            },
+            {
+                id: 3,
+                response: "0-0",
+                isValid: false,
+            },
+            {
+                id: 4,
+                response: "5-0",
+                isValid: true
+            }
+        ],
+        anecdote: "3 des 5 buts russes ont été marqués par 2 joueurs qui sont sortis du banc : Cheryshev (2 buts) et Dzyuba (1 but).",
+    },
+    {
+        id: 4,
+        category: categories.cultureG,
+        question: "Barcelone a remporté le titre de Champions League en 2015. Contre qui ont-ils joué dans la finale ?",
+        illustration: null,
+        responses: [
+            {
+                id: 1,
+                response: "Juventus",
+                isValid: true,
+            },
+            {
+                id: 2,
+                response: "Bayen Munich",
+                isValid: false,
+            },
+            {
+                id: 3,
+                response: "Atletico Madrid",
+                isValid: false,
+            },
+            {
+                id: 4,
+                response: "Chelsea",
+                isValid: false
+            }
+        ],
+        anecdote: "Le milieu de terrain Andres Iniesta Barcelonais est le premier joueur à aider dans différents buts en trois finales de la Ligue des Champions.",
+    },
+    {
+        id: 5,
+        category: categories.cultureG,
+        question: "Qui a été élu meilleur joueur de la Coupe du monde 2014 ?",
+        illustration: null,
+        responses: [
+            {
+                id: 1,
+                response: "Manuel Neuer",
+                isValid: false,
+            },
+            {
+                id: 2,
+                response: "Cristiano Ronaldo",
+                isValid: false,
+            },
+            {
+                id: 3,
+                response: "Lionel Messi",
+                isValid: true,
+            },
+            {
+                id: 4,
+                response: "Franck Ribéry",
+                isValid: false
+            }
+        ],
+        anecdote: null,
+    },
 ];
 
 module.exports = simplesQuestions;
