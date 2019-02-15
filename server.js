@@ -280,6 +280,10 @@ io.sockets.on('connection', function(socket) {
             session.table = socket;
             socket.join(room.question_parrallel);
 
+            sendToOne({
+                firstTeam: gameService.determineWhichTeamPlayInFirst(["rouge", "bleu"])
+            }, socket, "startTeam", 0);
+
 
             //===================QUESTION SEQ===================
             socket.on('question-collectif-seq', message => {

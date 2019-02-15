@@ -1,4 +1,9 @@
 class GameService {
+
+    determineWhichTeamPlayInFirst(teams) {
+        return teams[Math.floor(Math.random() * teams.length)];
+    }
+
     retrievePlayerOrderWhichPlay(playersTime) {
         return playersTime.sort((a, b) => {
             if (a.responseTime < b.responseTime) {
