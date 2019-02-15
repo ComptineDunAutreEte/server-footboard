@@ -522,17 +522,20 @@ function retrieveSimpleQuestionResponse(socket) {
         playersResponsesInformations.push(playerResponse);
 
         if (playersNumber > 0 && playersTime.length === playersNumber) {
-            const datas = gameService.retrievePlayerOrderWhichPlay(playersTime);
-            session.table.emit("indivQuestionResponse", {
-                data: datas
-            });
+            if (session.table) {
+                const datas = gameService.retrievePlayerOrderWhichPlay(playersTime);
 
-            session.table.on("indivQuestionTest", (response) => {
-                if (response.data === true) {
-                    playersTime.splice(0, playersTime.length);
-                    isAllPlayersResponded = false;
-                }
-            });
+                session.table.emit("indivQuestionResponse", {
+                    data: datas
+                });
+
+                session.table.on("indivQuestionTest", (response) => {
+                    if (response.data === true) {
+                        playersTime.splice(0, playersTime.length);
+                        isAllPlayersResponded = false;
+                    }
+                });
+            }
         }
 
         if (socket === player.session) {
@@ -557,7 +560,6 @@ function retrieveDashboardDatas(socket) {
                 session.getTeam(session.getPlayer(response.uuid).team).players.size
             );
 
-            console.log(dashboardDatas);
             socket.emit("dashboard-datas", dashboardDatas);
         }
     });
