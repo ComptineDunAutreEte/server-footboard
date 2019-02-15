@@ -281,7 +281,7 @@ io.sockets.on('connection', function(socket) {
             socket.join(room.question_parrallel);
 
             sendToOne({
-                firstTeam: gameService.determineWhichTeamPlayInFirst(["rouge", "bleu"])
+                team: gameService.determineWhichTeamPlayInFirst(["red", "blue"])
             }, socket, "startTeam", 0);
 
 
