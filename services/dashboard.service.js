@@ -16,14 +16,13 @@ class DashboardService {
         const history = [];
 
         const userResponsesService = new UserResponseInformationsService();
-        const generalResponses = userResponsesService.createRandomResponses(playersResponsesInformations.length);
+        const userResponses = playersResponsesInformations.filter((p) => p.playerUuid === uuid);
+        const generalResponses = userResponsesService.createRandomResponses(userResponses.length);
 
         const teamInformationsService = new TeamInformationsService(teamPlayers);
 
         const aResponses = teamInformationsService.createRandomInformations();
         const bResponses = teamInformationsService.createRandomInformations(aResponses.length);
-
-        const userResponses = playersResponsesInformations.filter((p) => p.playerUuid === uuid);
 
         userResponses.forEach((userResponse, i) => {
             const question = questions.find((q) => q.id === userResponse.questionId);

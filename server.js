@@ -231,18 +231,9 @@ io.sockets.on('connection', function(socket) {
                 /************************
                  * PARTIE LUTTHY
                  ***********************/
-                const indivQuestionChannel = "indivQuestion";
-
-                socket.on(indivQuestionChannel, (msg) => {
-                    if (msg.data === "ready") {
-                        io.emit("waitingScreen", { isReady: true });
-                    }
-                });
-
                 isEverybodyReady(socket);
                 retrieveSimpleQuestionResponse(socket);
                 retrieveDashboardDatas(socket);
-
                 /************************
                  * FIN PARTIE LUTTHY
                  ***********************/
@@ -334,15 +325,6 @@ io.sockets.on('connection', function(socket) {
                 sendToOne(["titi", "toto", "tata"], socket, 'returningScores', 0);
             });
 
-            socket.on("indivQuestion", (msg) => {
-                console.log(msg.data);
-                if (msg.data === "ready") {
-                    setTimeout(() => {
-                        sendToOne({ isReady: true }, socket, "waitingScreen", 0);
-                    }, 3000);
-                }
-            });
-
             //socket.emit('start-question-collectif', '');
             /*socket.emit('questionn', '');
             socket.on('video-resume-question-collectif', (message) => {
@@ -354,6 +336,33 @@ io.sockets.on('connection', function(socket) {
                 //session.nextSessionA().emit('question-collectif', question.firstQuestion());
             });*/
         }
+
+        const requestQuestionChannel = "request-question";
+
+        socket.on(requestQuestionChannel, (msg) => {
+            // TODO mettre un vrai random entre 1 et 3
+            const random = 1;
+
+            if (msg.data === "endOfSequence") {
+                switch (random) {
+                    case 1:
+                        io.emit("waitingScreen", {isReady: true});
+                        socket.emit("start-of-new-question", {
+                            data: 1
+                        });
+                        break;
+                    case 2:
+
+                        // TODO Implémenter questions collectif
+                        break;
+                    case 3:
+                        // TODO implémenter questions //
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
 
 
         /*console.log(message);
