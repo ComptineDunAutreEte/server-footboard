@@ -192,7 +192,7 @@ const GameService = require("./services/game.service");
 const gameService = new GameService();
 const playersTime = [];
 let playersNumber = 0;
-const isAllPlayersResponded = false;
+let isAllPlayersResponded = false;
 
 io.sockets.on('connection', function(socket) {
     socket.on('login', (message) => {
@@ -329,20 +329,6 @@ io.sockets.on('connection', function(socket) {
                 console.log("scores requested : " + message.data);
                 sendToOne(["titi", "toto", "tata"], socket, 'returningScores', 0);
             });
-
-            if (playersNumber > 0 && playersTime.length === playersNumber) {
-                console.log("send playersTime")
-                const datas = gameService.retrievePlayerOrderWhichPlay(playersTime);
-                socket.emit("indivQuestionResponse", {
-                    data: datas
-                });
-
-                socket.on("indivQuestionTest", (response) => {
-                    if (response.data === true) {
-                        playersTime.splice(0, playersTime.length);
-                    }
-                });
-            }
 
             socket.on("indivQuestion", (msg) => {
                 console.log(msg.data);
@@ -530,6 +516,20 @@ function retrieveSimpleQuestionResponse(socket) {
         });
 
         playersResponsesInformations.push(playerResponse);
+
+        if (playersNumber > 0 && playersTime.length === playersNumber) {
+            const datas = gameService.retrievePlayerOrderWhichPlay(playersTime);
+            session.table.emit("indivQuestionResponse", {
+                data: datas
+            });
+
+            session.table.on("indivQuestionTest", (response) => {
+                if (response.data === true) {
+                    playersTime.splice(0, playersTime.length);
+                    isAllPlayersResponded = false;
+                }
+            });
+        }
 
         if (socket === player.session) {
             socket.emit("response-simple-question", {
