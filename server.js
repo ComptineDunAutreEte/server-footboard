@@ -13,7 +13,7 @@ var server = http.createServer(function(req, res) {
     });
 });
 
-
+var number = 0;
 // Chargement de socket.io
 var io = require('socket.io').listen(server, {
     // below are engine.IO options
@@ -157,17 +157,25 @@ function question_collectif_seq(socket) {
 }
 
 function question_collectif_par(socket) {
+    console.log('question_collectif_par');
     socket.on('ready-par', message => {
+        console.log('ready-par');
+        socket.emit('ask-question-collectif-request-v2', questionv2.situation);
+        socket.emit('answers-question-collectif-request-v2', questionv2.answers[number]);
+
+        //for(session )
         //stocker l'ID
     });
-
-    socket.on('question-collectif-answer', message => {
-        let quest = question.answer(message.data);
-        if (quest !== null) {
-            session.nextSessionA().emit('question-collectif-par', quest);
+    number++;
+    socket.on('answered', message => {
+        console.log(message);
+        if (message.team === 'B') {
+            sendToAll(room.team_B, message.data, 'moveTo');
         } else {
-            //terminer envoi sur la table
+            sendToAll(room.team_A, message.data, 'moveTo');
         }
+
+        questionv2.answer(message, io, session.table);
     });
 }
 //==================Fin Partie de Long=================================
@@ -187,11 +195,9 @@ let playersNumber = 0;
 const isAllPlayersResponded = false;
 
 io.sockets.on('connection', function(socket) {
-    //console.log('connected');
     socket.on('login', (message) => {
         if (message.type === 'tablet') {
             const data = message.data;
-            console.log(data);
 
             const player = new Player();
             player.pseudo = data.pseudo;
@@ -204,9 +210,12 @@ io.sockets.on('connection', function(socket) {
                 console.log('add========================');
                 join_rooms(socket, player.team);
                 question_collectif_seq(socket);
+                question_collectif_par(socket);
                 sendToOne('Home', socket, 'navigate');
-
-                socket.emit("players-to-table", ["toto", "tutu"]);
+                questionv2.addSession(socket, player);
+                if (session.table !== null) {
+                    sendToOne({ pseudo: player.pseudo, team: player.team }, session.table, 'listen-user-login');
+                }
 
                 //question_collectif_par(socket);
                 //io.sockets.in(room.navigate).emit('navigate', 'QuestionCollectif');
@@ -269,6 +278,10 @@ io.sockets.on('connection', function(socket) {
         } else { //cas ou c'est la table
             console.log('ici-table : ' + message.data);
             session.table = socket;
+            socket.join(room.question_parrallel);
+
+
+            //===================QUESTION SEQ===================
             socket.on('question-collectif-seq', message => {
                 console.log('table:question-collectif-seq');
                 sendToAll(room.navigate, 'QuestionCollectif', 'navigate');
@@ -278,10 +291,30 @@ io.sockets.on('connection', function(socket) {
                 });
                 //sendToAll(room.navigate, 'QuestionCollectif', 'navigate');
             });
+
             socket.on('ready-screen-par', message => {
                 console.log('table:ready-screen-par');
                 sendToAll(room.ready, '', 'ready-screen-par');
             });
+
+            //===================QUESTION PAR=====================
+
+            socket.on('question-collectif-par', message => {
+                console.log('table:question-collectif-par');
+                sendToAll(room.navigate, 'QuestionCollectifV2', 'navigate');
+                sendToAll(room.question_parrallel, questionv2.situation, 'situation');
+                questionv2.send_answer();
+                //send answer lot of thing to do
+                //sendToAll(room.navigate, 'QuestionCollectif', 'navigate');
+            });
+            socket.on('ready-screen', message => {
+                console.log('table:ready-screen');
+                sendToAll(room.ready, '', 'ready-screen');
+            });
+
+            //======================================================
+
+
             // MOCK : listening for player request
             socket.on('addPlayerPlease', message => {
                 console.log("player name requested : " + message.data);
@@ -311,6 +344,14 @@ io.sockets.on('connection', function(socket) {
                 });
             }
 
+            socket.on("indivQuestion", (msg) => {
+                console.log(msg.data);
+                if (msg.data === "ready") {
+                    setTimeout(() => {
+                        sendToOne({ isReady: true }, socket, "waitingScreen", 0);
+                    }, 3000);
+                }
+            });
 
             //socket.emit('start-question-collectif', '');
             /*socket.emit('questionn', '');
@@ -349,6 +390,7 @@ io.sockets.on('connection', function(socket) {
         console.log('reset');
         //questionv2.ready = 0;
         question.reset();
+        questionv2.reset();
         session.reset();
     });
 
