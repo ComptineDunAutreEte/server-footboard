@@ -5,6 +5,8 @@ class GameService {
     }
 
     retrievePlayerOrderWhichPlay(playersTime) {
+        playersTime = playersTime.filter((pt) => pt.isGoodResponse === true);
+
         return playersTime.sort((a, b) => {
             if (a.responseTime < b.responseTime) {
                 return -1;

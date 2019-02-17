@@ -190,7 +190,7 @@ const dashboardService = new DashboardService();
 const UserResponseInformations = require("./model/user-response-informations");
 const GameService = require("./services/game.service");
 const gameService = new GameService();
-const playersTime = [];
+let playersTime = [];
 let playersNumber = 0;
 let isAllPlayersResponded = false;
 
@@ -468,6 +468,8 @@ function isEverybodyReady(socket) {
 
         if (isEverybodyReady) {
             nQuestionCounter++;
+            console.log("isEverybodyReady + nQuestionCounter", isEverybodyReady, nQuestionCounter);
+
             io.emit("ask-simple-question", {
                 isEverybodyReady: true,
                 question: getSimpleQuestion(),
@@ -525,12 +527,34 @@ function retrieveSimpleQuestionResponse(socket) {
             uuid: player.uuid,
             pseudo: player.pseudo,
             team: player.team,
-            responseTime: userResponseTime
+            responseTime: userResponseTime,
+            isGoodResponse: isCorrectPlayerResponse
         });
 
         playersResponsesInformations.push(playerResponse);
 
+        console.log("-----------------------------------------------------------")
+        console.log("-----------------------------------------------------------")
+        console.log("-----------------------------------------------------------")
+        console.log("playersNumber > 0", playersNumber > 0);
+        console.log("playersTime.length === playersNumber", playersTime.length === playersNumber);
+        console.log("playersTime.length", playersTime.length);
+        console.log("playersNumber", playersNumber);
+        console.log("-----------------------------------------------------------")
+        console.log("-----------------------------------------------------------")
+        console.log("-----------------------------------------------------------")
         if (playersNumber > 0 && playersTime.length === playersNumber) {
+            console.log("-----------------------------------------------------------")
+            console.log("-----------------------------------------------------------")
+            console.log("-----------------------------------------------------------")
+            console.log("playersNumber > 0", playersNumber > 0);
+            console.log("playersTime.length === playersNumber", playersTime.length === playersNumber);
+            console.log("playersTime.length", playersTime.length);
+            console.log("playersNumber", playersNumber);
+            console.log("-----------------------------------------------------------")
+            console.log("-----------------------------------------------------------")
+            console.log("-----------------------------------------------------------")
+
             if (session.table) {
                 const datas = gameService.retrievePlayerOrderWhichPlay(playersTime);
 
@@ -538,10 +562,16 @@ function retrieveSimpleQuestionResponse(socket) {
                     data: datas
                 });
 
+                console.log("datas playersTime before", datas);
+                console.log("playersTime before", playersTime);
+
+
                 session.table.on("indivQuestionTest", (response) => {
+                    console.log("indivQuestionTest", response);
                     if (response.data === true) {
                         playersTime.splice(0, playersTime.length);
-                        isAllPlayersResponded = false;
+                        playersTime = [];
+                        console.log("playersTime after", playersTime);
                     }
                 });
             }
