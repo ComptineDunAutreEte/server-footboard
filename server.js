@@ -169,13 +169,36 @@ function question_collectif_par(socket) {
     number++;
     socket.on('answered', message => {
         console.log(message);
+
+        let newAnswer = questionv2.answer(message, io, session.table);
+
         if (message.team === 'B') {
-            sendToAll(room.team_B, message.data, 'moveTo');
+            sendToAll(room.team_B, newAnswer, 'moveTo');
         } else {
-            sendToAll(room.team_A, message.data, 'moveTo');
+            sendToAll(room.team_A, newAnswer, 'moveTo');
         }
 
-        questionv2.answer(message, io, session.table);
+        if (questionv2.answer_A.length === questionv2.sessionA.length) {
+            questionv2.ready[0] = true;
+            //all-answered
+            sendToAll(room.team_A, 'Veuillez attendre l\'équipe Adverse', 'wait-for-others');
+            //io.to('team_A').emit('wait-for-others', 'Veuillez attendre l\'équipe Adverse');
+        }
+        if (questionv2.answer_B.length === questionv2.sessionB.length) {
+            questionv2.ready[1] = true;
+            if (questionv2.sessionB.length > 0) {
+                //io.to('team_B').emit('all-answered', '');
+                //send all-answer
+                //io.to('team_B').emit('wait-for-others', 'Veuillez attendre l\'équipe Adverse');
+                sendToAll(room.team_B, 'Veuillez attendre l\'équipe Adverse', 'wait-for-others');
+            }
+        }
+
+        if (questionv2.ready[0] && questionv2.ready[1]) {
+            ///io.to('question-parrallel').emit('all-answered', '');
+            sendToAll(room.question_parrallel, '', 'all-answered');
+        }
+
     });
 }
 //==================Fin Partie de Long=================================
@@ -346,7 +369,7 @@ io.sockets.on('connection', function(socket) {
             if (msg.data === "endOfSequence") {
                 switch (random) {
                     case 1:
-                        io.emit("waitingScreen", {isReady: true});
+                        io.emit("waitingScreen", { isReady: true });
                         socket.emit("start-of-new-question", {
                             data: 1
                         });
