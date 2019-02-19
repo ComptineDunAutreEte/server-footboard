@@ -9,7 +9,6 @@ class QuestionCollectifV2 {
         this.ready = [false, false];
         this.sessionA = [];
         this.sessionB = [];
-        this.team_map = new Map();
 
         this.answer_A = [];
         this.answer_B = [];
@@ -98,6 +97,14 @@ class QuestionCollectifV2 {
         this.sessionA = [];
         this.sessionB = [];
         this.ready = [false, false];
+
+
+        this.situation = situation3.situation;
+
+        this.team_A = situation3.team_A;
+        this.team_B = situation3.team_B;
+
+        this.answers = answers3;
     }
 }
 
