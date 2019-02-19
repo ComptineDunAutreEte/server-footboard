@@ -1,6 +1,6 @@
 class QuestionCollectifV2 {
     constructor(situation, answers) {
-        this.situation = situation.situation;
+        this.situation = situation.situation.situations;
 
         this.team_A = situation.team_A;
         this.team_B = situation.team_B;
@@ -109,7 +109,7 @@ class QuestionCollectifV2 {
         this.ready = [false, false];
 
 
-        this.situation = situation3.situation;
+        this.situation = situation3.situation.situations;
 
         this.team_A = situation3.team_A;
         this.team_B = situation3.team_B;
@@ -343,147 +343,150 @@ const situation3 = {
             }
         ]
     },
-    "situation": [{
-            "color": "#03a9f4",
-            "x": 654,
-            "y": 499,
-            "size": 100,
-            "uuid": "445af3fa-0820-448f-bb27-54784398bf0a",
-            "type": "Player",
-            "name": "",
-            "image": "PBlanc",
-            "style": {
-                "width": 100,
-                "height": 100
+    "situation": {
+        "screen": { x: 1194, y: 834 },
+        "situations": [{
+                "color": "#03a9f4",
+                "x": 654,
+                "y": 499,
+                "size": 100,
+                "uuid": "445af3fa-0820-448f-bb27-54784398bf0a",
+                "type": "Player",
+                "name": "",
+                "image": "PBlanc",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 620.5,
+                "y": 154,
+                "size": 100,
+                "uuid": "05cdb75b-a987-4b6c-8007-5495409e76fb",
+                "type": "Player",
+                "name": "Mbappe",
+                "image": "PBleuFoot",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 635,
+                "y": 276.5,
+                "size": 100,
+                "uuid": "19e1daf2-645b-446f-9988-a333d918da0e",
+                "type": "Player",
+                "name": "Neymar",
+                "image": "PBlanc",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 406.5,
+                "y": 413,
+                "size": 100,
+                "uuid": "a694ebea-9f8a-4262-9d2c-d366788afd33",
+                "type": "Player",
+                "name": "",
+                "image": "PBleu",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 442.5,
+                "y": 318.5,
+                "size": 100,
+                "uuid": "ec16b71e-4b78-4452-9dea-2d96c4b0486d",
+                "type": "Player",
+                "name": "",
+                "image": "PBleu",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 482.5,
+                "y": 294,
+                "size": 100,
+                "uuid": "e2158c5f-5aff-43fb-8707-d7746ddc0527",
+                "type": "Player",
+                "name": "",
+                "image": "PBleu",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 545,
+                "y": 245.5,
+                "size": 100,
+                "uuid": "119403e8-0b09-4a95-acf1-f3a40033f094",
+                "type": "Player",
+                "name": "",
+                "image": "PBleu",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 716,
+                "y": 189.5,
+                "size": 100,
+                "uuid": "30cc49cf-fd73-4827-97d0-e6f1c601d5cb",
+                "type": "Player",
+                "name": "",
+                "image": "PBleu",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 591,
+                "y": 188,
+                "size": 100,
+                "uuid": "a8e58472-9cb4-40f0-8409-5c6c9060f118",
+                "type": "Ball",
+                "name": "",
+                "image": "Ball",
+                "style": {
+                    "width": 30,
+                    "height": 30
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 400.5,
+                "y": 289.5,
+                "size": 100,
+                "uuid": "1367d74b-eaa4-4416-987c-1e55804e2570",
+                "type": "Player",
+                "name": "Cavani",
+                "image": "PBlanc",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
             }
-        },
-        {
-            "color": "#03a9f4",
-            "x": 620.5,
-            "y": 154,
-            "size": 100,
-            "uuid": "05cdb75b-a987-4b6c-8007-5495409e76fb",
-            "type": "Player",
-            "name": "Mbappe",
-            "image": "PBleuFoot",
-            "style": {
-                "width": 100,
-                "height": 100
-            }
-        },
-        {
-            "color": "#03a9f4",
-            "x": 635,
-            "y": 276.5,
-            "size": 100,
-            "uuid": "19e1daf2-645b-446f-9988-a333d918da0e",
-            "type": "Player",
-            "name": "Neymar",
-            "image": "PBlanc",
-            "style": {
-                "width": 100,
-                "height": 100
-            }
-        },
-        {
-            "color": "#03a9f4",
-            "x": 406.5,
-            "y": 413,
-            "size": 100,
-            "uuid": "a694ebea-9f8a-4262-9d2c-d366788afd33",
-            "type": "Player",
-            "name": "",
-            "image": "PBleu",
-            "style": {
-                "width": 100,
-                "height": 100
-            }
-        },
-        {
-            "color": "#03a9f4",
-            "x": 442.5,
-            "y": 318.5,
-            "size": 100,
-            "uuid": "ec16b71e-4b78-4452-9dea-2d96c4b0486d",
-            "type": "Player",
-            "name": "",
-            "image": "PBleu",
-            "style": {
-                "width": 100,
-                "height": 100
-            }
-        },
-        {
-            "color": "#03a9f4",
-            "x": 482.5,
-            "y": 294,
-            "size": 100,
-            "uuid": "e2158c5f-5aff-43fb-8707-d7746ddc0527",
-            "type": "Player",
-            "name": "",
-            "image": "PBleu",
-            "style": {
-                "width": 100,
-                "height": 100
-            }
-        },
-        {
-            "color": "#03a9f4",
-            "x": 545,
-            "y": 245.5,
-            "size": 100,
-            "uuid": "119403e8-0b09-4a95-acf1-f3a40033f094",
-            "type": "Player",
-            "name": "",
-            "image": "PBleu",
-            "style": {
-                "width": 100,
-                "height": 100
-            }
-        },
-        {
-            "color": "#03a9f4",
-            "x": 716,
-            "y": 189.5,
-            "size": 100,
-            "uuid": "30cc49cf-fd73-4827-97d0-e6f1c601d5cb",
-            "type": "Player",
-            "name": "",
-            "image": "PBleu",
-            "style": {
-                "width": 100,
-                "height": 100
-            }
-        },
-        {
-            "color": "#03a9f4",
-            "x": 591,
-            "y": 188,
-            "size": 100,
-            "uuid": "a8e58472-9cb4-40f0-8409-5c6c9060f118",
-            "type": "Ball",
-            "name": "",
-            "image": "Ball",
-            "style": {
-                "width": 30,
-                "height": 30
-            }
-        },
-        {
-            "color": "#03a9f4",
-            "x": 400.5,
-            "y": 289.5,
-            "size": 100,
-            "uuid": "1367d74b-eaa4-4416-987c-1e55804e2570",
-            "type": "Player",
-            "name": "Cavani",
-            "image": "PBlanc",
-            "style": {
-                "width": 100,
-                "height": 100
-            }
-        }
-    ]
+        ]
+    }
 };
 
 const answers = [{
