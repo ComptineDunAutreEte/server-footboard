@@ -7,6 +7,9 @@ class QuestionCollectifV2 {
 
         this.answers = answers;
         this.ready = [false, false];
+
+        this.team_map = new Map();
+
         this.sessionA = [];
         this.sessionB = [];
 
