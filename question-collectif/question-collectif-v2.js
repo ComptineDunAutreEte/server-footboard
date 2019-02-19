@@ -57,9 +57,12 @@ class QuestionCollectifV2 {
                         answer.moveTo.push(ball);
                     }
                 } else {
-                    let player = this.getPlayer(team, answer.moveTo[0].toPlayer);
-                    player.x = answer.moveTo[0].x;
-                    player.y = answer.moveTo[0].y;
+                    let player = this.getPlayer(team, answer.moveTo[0].uuid);
+                    if (player) {
+                        console.log(player);
+                        player.x = answer.moveTo[0].x;
+                        player.y = answer.moveTo[0].y;
+                    }
                 }
             } else {
                 if (answer.moveTo[0].toPlayer !== null) {
