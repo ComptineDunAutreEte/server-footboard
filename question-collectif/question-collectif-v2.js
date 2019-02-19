@@ -1,6 +1,6 @@
 class QuestionCollectifV2 {
     constructor(situation, answers) {
-        this.situation = situation.situation.situations;
+        this.situation = situation.situation;
 
         this.team_A = situation.team_A;
         this.team_B = situation.team_B;
@@ -109,7 +109,7 @@ class QuestionCollectifV2 {
         this.ready = [false, false];
 
 
-        this.situation = situation3.situation.situations;
+        this.situation = situation3.situation;
 
         this.team_A = situation3.team_A;
         this.team_B = situation3.team_B;
