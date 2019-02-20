@@ -181,7 +181,7 @@ function question_collectif_par(socket) {
             sendToAll(room.team_A, newAnswer, 'moveTo');
             if (more !== undefined) {
                 if (more.toSession === -1) {
-                    sendToAll(room.team_A, '', 'lost');
+                    sendToAll(room.team_A, 'Mince, votre équipe à perdu le ballon...', 'lost');
                 } else {
                     sendToOne(more.new_answer, questionv2.sessionA[more.toSession], 'moreAnswer');
                 }
