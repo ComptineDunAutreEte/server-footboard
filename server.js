@@ -172,6 +172,7 @@ function question_collectif_par(socket) {
             sendToAll(room.team_B, newAnswer, 'moveTo');
             if (more !== undefined) {
                 if (more.toSession === -1) {
+                    questionv2.ready[1] = true;
                     sendToAll(room.team_B, 'Mince, votre équipe à perdu le ballon...', 'lost');
                 } else {
                     sendToOne(more.new_answer, questionv2.sessionB[more.toSession], 'moreAnswer');
@@ -181,6 +182,7 @@ function question_collectif_par(socket) {
             sendToAll(room.team_A, newAnswer, 'moveTo');
             if (more !== undefined) {
                 if (more.toSession === -1) {
+                    questionv2.ready[0] = true;
                     sendToAll(room.team_A, 'Mince, votre équipe à perdu le ballon...', 'lost');
                 } else {
                     sendToOne(more.new_answer, questionv2.sessionA[more.toSession], 'moreAnswer');
