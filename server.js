@@ -171,12 +171,20 @@ function question_collectif_par(socket) {
         if (message.team === 'B') {
             sendToAll(room.team_B, newAnswer, 'moveTo');
             if (more !== undefined) {
-                sendToOne(more.new_answer, questionv2.sessionB[more.toSession], 'moreAnswer');
+                if (more.toSession === -1) {
+                    sendToAll(room.team_B, '', 'lost');
+                } else {
+                    sendToOne(more.new_answer, questionv2.sessionB[more.toSession], 'moreAnswer');
+                }
             }
         } else {
             sendToAll(room.team_A, newAnswer, 'moveTo');
             if (more !== undefined) {
-                sendToOne(more.new_answer, questionv2.sessionA[more.toSession], 'moreAnswer');
+                if (more.toSession === -1) {
+                    sendToAll(room.team_A, '', 'lost');
+                } else {
+                    sendToOne(more.new_answer, questionv2.sessionA[more.toSession], 'moreAnswer');
+                }
             }
         }
 

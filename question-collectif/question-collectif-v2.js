@@ -17,6 +17,7 @@ class QuestionCollectifV2 {
 
         this.answer_A = [];
         this.answer_B = [];
+        this.points = new Map();
     }
     addSession(socket, player) {
         this.team_map.set(player.uuid, socket);
@@ -37,12 +38,18 @@ class QuestionCollectifV2 {
     }
 
     getPlayer(team, player) {
-        for (let obj of team.tab) {
-            if (obj.uuid === player) {
-                return obj;
+            for (let obj of team.tab) {
+                if (obj.uuid === player) {
+                    return obj;
+                }
             }
+            return null;
         }
-        return null;
+        //"x":496.5,"y":260.5 ball
+
+    //"x":477,"y":228 player
+    handle_lost_game() {
+
     }
     handle(team, answer) {
         if (answer.moveTo !== null) {
@@ -85,12 +92,18 @@ class QuestionCollectifV2 {
         //let team = this.team_map.get(message.uuid);
         //for()
         let newMessage = null;
+        let more = this.more_answers[message.data.moveTo[0].uuid];
+
+        this.points.set(message.uuid, message.moveTo[0].point);
         if (message.team === 'A') {
             this.answer_A.push(message.data);
             newMessage = this.handle(this.team_A, message.data);
         } else {
             this.answer_B.push(message.data);
             newMessage = this.handle(this.team_B, message.data);
+        }
+        if (more !== undefined && more.toSession === -1) {
+            newMessage.moveTo.push(more.new_answer);
         }
         return newMessage;
     }
@@ -117,6 +130,7 @@ class QuestionCollectifV2 {
         this.team_B = JSON.parse(JSON.stringify(situation3.team_B));
 
         this.answers = answers3;
+        this.points.clear();
     }
 }
 
@@ -129,7 +143,8 @@ const answers3 = [{
         "reponses": [{
                 "type": "Player",
                 "reponse": "Je ne bouge pas",
-                "moveTo": null
+                "moveTo": null,
+                "point": 0
             },
             {
                 "type": "Player",
@@ -148,7 +163,8 @@ const answers3 = [{
                         "width": 100,
                         "height": 100
                     }
-                }]
+                }],
+                "point": 0
             }
         ]
     },
@@ -159,8 +175,8 @@ const answers3 = [{
                 "reponse": "Je passe le ballon à Canavi",
                 "moveTo": [{
                     "color": "#03a9f4",
-                    "x": 200,
-                    "y": 359.5,
+                    "x": 496.5,
+                    "y": 260.5,
                     "size": 30,
                     "uuid": "a8e58472-9cb4-40f0-8409-5c6c9060f118",
                     "type": "Ball",
@@ -170,8 +186,10 @@ const answers3 = [{
                         "width": 30,
                         "height": 30
                     },
-                    "toPlayer": "1367d74b-eaa4-4416-987c-1e55804e2570"
-                }]
+                    "toPlayer": null
+                }],
+                "nextMove": "next_move_for_Canavi",
+                "point": 0
             },
             {
                 "type": "Ball",
@@ -190,7 +208,10 @@ const answers3 = [{
                         "height": 30
                     },
                     "toPlayer": "19e1daf2-645b-446f-9988-a333d918da0e"
-                }]
+                }],
+                "nextMove": "next_move_for_Neymar",
+                "point": 5
+
             }
         ]
     },
@@ -199,7 +220,8 @@ const answers3 = [{
         "reponses": [{
                 "type": "Player",
                 "reponse": "Je ne bouge pas",
-                "moveTo": null
+                "moveTo": null,
+                "point": 0
             },
             {
                 "type": "Player",
@@ -218,7 +240,8 @@ const answers3 = [{
                         "width": 100,
                         "height": 100
                     }
-                }]
+                }],
+                "point": 5
             }
         ]
     }
@@ -226,7 +249,7 @@ const answers3 = [{
 
 const situation3 = {
     "more_answers": {
-        "a8e58472-9cb4-40f0-8409-5c6c9060f118": {
+        "next_move_for_Neymar": {
             "toSession": 0,
             "new_answer": {
                 "type": "Ball",
@@ -245,8 +268,26 @@ const situation3 = {
                         "height": 30
                     }
                 }],
-                "toPlayer": null
+                "toPlayer": null,
+                "point": 5
             }
+        },
+        "next_move_for_Canavi": {
+            "toSession": -1,
+            "lost_game": [{
+                "color": "#03a9f4",
+                "x": 477,
+                "y": 228,
+                "size": 100,
+                "uuid": "119403e8-0b09-4a95-acf1-f3a40033f094",
+                "type": "Player",
+                "name": "",
+                "image": "PBleu",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            }]
         }
     },
     "team_B": {
