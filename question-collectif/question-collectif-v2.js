@@ -236,7 +236,7 @@ const situation3 = {
                     "x": 172.5,
                     "y": 276.5,
                     "size": 100,
-                    "uuid": "f66b1ed1-6662-49f5-8720-8a5fbcbdb69e",
+                    "uuid": "a8e58472-9cb4-40f0-8409-5c6c9060f118",
                     "type": "Ball",
                     "name": "",
                     "image": "Ball",
