@@ -1,9 +1,11 @@
 class QuestionCollectifV2 {
     constructor(situation, answers) {
-        this.situation = JSON.parse(JSON.stringify(situation.situation));
+        this.situation = situation.situation;
 
-        this.team_A = situation.team_A;
-        this.team_B = situation.team_B;
+        this.team_A = JSON.parse(JSON.stringify(situation.team_A));
+        this.team_B = JSON.parse(JSON.stringify(situation.team_B));
+
+        this.more_answers = situation.more_answers;
 
         this.answers = answers;
         this.ready = [false, false];
@@ -17,7 +19,7 @@ class QuestionCollectifV2 {
         this.answer_B = [];
     }
     addSession(socket, player) {
-        this.team_map.set(player.uuid, player.team);
+        this.team_map.set(player.uuid, socket);
         if (player.team === 'A') {
             this.sessionA.push(socket);
         } else {
@@ -109,10 +111,10 @@ class QuestionCollectifV2 {
         this.ready = [false, false];
 
 
-        this.situation = JSON.parse(JSON.stringify(situation3.situation));
+        this.situation = situation3.situation;
 
-        this.team_A = situation3.team_A;
-        this.team_B = situation3.team_B;
+        this.team_A = JSON.parse(JSON.stringify(situation3.team_A));
+        this.team_B = JSON.parse(JSON.stringify(situation3.team_B));
 
         this.answers = answers3;
     }
@@ -223,6 +225,30 @@ const answers3 = [{
 ];
 
 const situation3 = {
+    "more_answers": {
+        "19e1daf2-645b-446f-9988-a333d918da0e": {
+            "toSession": 0,
+            "new_answer": {
+                "type": "Ball",
+                "reponse": "je tire!",
+                "moveTo": [{
+                    "color": "#03a9f4",
+                    "x": 172.5,
+                    "y": 276.5,
+                    "size": 100,
+                    "uuid": "f66b1ed1-6662-49f5-8720-8a5fbcbdb69e",
+                    "type": "Ball",
+                    "name": "",
+                    "image": "Ball",
+                    "style": {
+                        "width": 30,
+                        "height": 30
+                    }
+                }],
+                "toPlayer": null
+            }
+        }
+    },
     "team_B": {
         "playerHasBall": "05cdb75b-a987-4b6c-8007-5495409e76fb",
         "tab": [{

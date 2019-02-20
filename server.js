@@ -125,12 +125,6 @@ function question_collectif_seq(socket) {
                 let sock = question.get_next_session_team_A();
                 console.log('hello');
                 sock.emit('question-collectif-par', question.firstQuestion());
-                //sendToAll(room.team_A, '', 'question-screen');
-                //let id = question.get_next_ID_from_team_A();
-                // send to all puis 
-                //let p = session.getPlayer(id);
-
-                // sendToOne('', socket, 'question-screen');
             }
         } else {
 
@@ -172,11 +166,22 @@ function question_collectif_par(socket) {
 
         let newAnswer = questionv2.answer(message, io, session.table);
 
+        let more = questionv2.more_answers[newAnswer.moveTo[0].uuid];
+
         if (message.team === 'B') {
             sendToAll(room.team_B, newAnswer, 'moveTo');
+            if (more !== undefined) {
+                sendToOne(more.new_answer, questionv2.sessionB[more.toSession], 'moreAnswer');
+            }
         } else {
             sendToAll(room.team_A, newAnswer, 'moveTo');
+            if (more !== undefined) {
+                sendToOne(more.new_answer, questionv2.sessionA[more.toSession], 'moreAnswer');
+            }
         }
+
+
+
 
         if (questionv2.answer_A.length === questionv2.sessionA.length) {
             questionv2.ready[0] = true;
