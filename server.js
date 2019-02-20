@@ -342,7 +342,7 @@ io.sockets.on('connection', function(socket) {
             });
             socket.on('ready-screen', message => {
                 console.log('table:ready-screen');
-                sendToAll(room.ready, '', 'ready-screen');
+                sendToAll(room.ready, '', 'ready');
             });
 
             //======================================================
