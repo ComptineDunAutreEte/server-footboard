@@ -166,13 +166,13 @@ function question_collectif_par(socket) {
 
         let newAnswer = questionv2.answer(message, io, session.table);
 
-        let more = questionv2.more_answers[newAnswer.moveTo[0].uuid];
+        let more = questionv2.more_answers[newAnswer.nextMove];
 
         if (message.team === 'B') {
             sendToAll(room.team_B, newAnswer, 'moveTo');
             if (more !== undefined) {
                 if (more.toSession === -1) {
-                    sendToAll(room.team_B, '', 'lost');
+                    sendToAll(room.team_B, 'Mince, votre équipe à perdu le ballon...', 'lost');
                 } else {
                     sendToOne(more.new_answer, questionv2.sessionB[more.toSession], 'moreAnswer');
                 }

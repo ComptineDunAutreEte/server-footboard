@@ -92,9 +92,9 @@ class QuestionCollectifV2 {
         //let team = this.team_map.get(message.uuid);
         //for()
         let newMessage = null;
-        let more = this.more_answers[message.data.moveTo[0].uuid];
+        let more = this.more_answers[message.data.nextMove];
 
-        this.points.set(message.uuid, message.moveTo[0].point);
+        this.points.set(message.uuid, message.data.moveTo[0].point);
         if (message.team === 'A') {
             this.answer_A.push(message.data);
             newMessage = this.handle(this.team_A, message.data);
@@ -103,8 +103,10 @@ class QuestionCollectifV2 {
             newMessage = this.handle(this.team_B, message.data);
         }
         if (more !== undefined && more.toSession === -1) {
-            newMessage.moveTo.push(more.new_answer);
+            console.log('more.tosession ', more);
+            newMessage.moveTo.push(more.lost_game[0]);
         }
+        console.log('new-answer', newMessage);
         return newMessage;
     }
 
@@ -347,6 +349,19 @@ const situation3 = {
                     "width": 100,
                     "height": 100
                 }
+            }, {
+                "color": "#03a9f4",
+                "x": 545,
+                "y": 245.5,
+                "size": 100,
+                "uuid": "119403e8-0b09-4a95-acf1-f3a40033f094",
+                "type": "Player",
+                "name": "",
+                "image": "PBleu",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
             }
         ]
     },
@@ -403,6 +418,19 @@ const situation3 = {
                 "type": "Player",
                 "name": "Neymar",
                 "image": "PBlanc",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            }, {
+                "color": "#03a9f4",
+                "x": 545,
+                "y": 245.5,
+                "size": 100,
+                "uuid": "119403e8-0b09-4a95-acf1-f3a40033f094",
+                "type": "Player",
+                "name": "",
+                "image": "PBleu",
                 "style": {
                     "width": 100,
                     "height": 100
