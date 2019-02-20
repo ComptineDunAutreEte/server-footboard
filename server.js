@@ -340,7 +340,7 @@ io.sockets.on('connection', function(socket) {
                 //send answer lot of thing to do
                 //sendToAll(room.navigate, 'QuestionCollectif', 'navigate');
             });
-            socket.on('ready-screen', message => {
+            socket.on('ready-question', message => {
                 console.log('table:ready-screen');
                 sendToAll(room.ready, '', 'ready');
             });
