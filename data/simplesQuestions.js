@@ -149,31 +149,118 @@ const simplesQuestions = [
     {
         id: 5,
         category: categories.cultureG,
-        question: "Qui a été élu meilleur joueur de la Coupe du monde 2014 ?",
+        question: "La coupe du Monde FIFA 2018 a été organisée dans quel pays ?",
         illustration: null,
         responses: [
             {
                 id: 1,
-                response: "Manuel Neuer",
+                response: "Etats-Unis",
                 isValid: false,
             },
             {
                 id: 2,
-                response: "Cristiano Ronaldo",
+                response: "Russie",
+                isValid: true,
+            },
+            {
+                id: 3,
+                response: "Allemagne",
+                isValid: false,
+            },
+            {
+                id: 4,
+                response: "Chine",
+                isValid: false
+            }
+        ],
+        anecdote: "Fait amusant, le Mexique détient le record pour la plupart des défaites dans l'histoire de la coupe du monde. Ils ont perdu 27 matchs.",
+    },
+    {
+        id: 6,
+        category: categories.cultureG,
+        question: "Quel animal fut nommé Zabivaka et choisi pour être la mascotte de la Coupe du Monde 2018 ?",
+        illustration: null,
+        responses: [
+            {
+                id: 1,
+                response: "Un ours",
+                isValid: false,
+            },
+            {
+                id: 2,
+                response: "Un tigre de Sibérie",
                 isValid: false,
             },
             {
                 id: 3,
-                response: "Lionel Messi",
+                response: "Un aigle",
+                isValid: false,
+            },
+            {
+                id: 4,
+                response: "Un loup",
+                isValid: true
+            }
+        ],
+        anecdote: "Le loup de Zabivaka a été conçu par l'étudiant russe Ekaterina Bocharova. La mascotte a été choisie par un vote en ligne.",
+    },
+    {
+        id: 7,
+        category: categories.cultureG,
+        question: "Qui est le joueur le plus âgé à avoir réussi un coup du chapeau en Coupe du Monde ?",
+        illustration: null,
+        responses: [
+            {
+                id: 1,
+                response: "Christiano Ronaldo",
+                isValid: true,
+            },
+            {
+                id: 2,
+                response: "Pauleta",
+                isValid: false,
+            },
+            {
+                id: 3,
+                response: "Rob Resenbrink",
+                isValid: false,
+            },
+            {
+                id: 4,
+                response: "Eusebio",
+                isValid: true
+            }
+        ],
+        anecdote: "Ronaldo a marqué le 51ème coup du chapeau de la Coupe du Monde à 33 ans. Le dernier record était de Rensenbrink (30 ans, en 1978).",
+    },
+    {
+        id: 8,
+        category: categories.cultureG,
+        question: "Qui était le dernier club Français à jouer en finale de la Ligue des Champions ?",
+        illustration: null,
+        responses: [
+            {
+                id: 1,
+                response: "Saint-Étienne",
+                isValid: false,
+            },
+            {
+                id: 2,
+                response: "Marseille",
+                isValid: false,
+            },
+            {
+                id: 3,
+                response: "Monaco",
                 isValid: true,
             },
             {
                 id: 4,
-                response: "Franck Ribéry",
+                response: "Paris Saint Germain",
                 isValid: false
             }
         ],
-        anecdote: null,
+        anecdote: "En 2005, Monaco avait fait une belle course en battant le Real Madrid et Chelsea dans les étapes d'élimination, mais a perdu à Porto dans le 3-0 final.",
     },
 ];
 
