@@ -270,6 +270,7 @@ io.sockets.on('connection', function(socket) {
             player.pseudo = data.pseudo;
             player.uuid = message.uuid;
             player.team = data.team;
+            console.log(data.team);
             player.level = data.userLevel;
 
             if (session.add(player, socket)) {
@@ -358,6 +359,11 @@ io.sockets.on('connection', function(socket) {
             socket.on('ready-screen-par', message => {
                 console.log('table:ready-screen-par');
                 sendToAll(room.ready, '', 'ready-screen-par');
+            });
+
+            socket.on('terminer', message => {
+                console.log(terminer);
+                sendToAll(room.question_parrallel, '', 'terminer');
             });
 
             socket.on('ask-result', message => {
