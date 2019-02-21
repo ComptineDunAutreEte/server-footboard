@@ -27,24 +27,6 @@ class Session {
         this.indexA = 0;
     }
 
-    nextSessionA() {
-        let tab = Array.from(this.getTeam('A').players.values());
-        let socket = tab[this.indexA % tab.length];
-        //console.log(socket);
-        this.indexA++;
-        return socket.session;
-    }
-
-    setJSON(size, team, pseudo) {
-        if (size >= 0 && size < 3) {
-            if (team === 'A') {
-                this.tab[size].A = pseudo;
-            } else {
-                this.tab[size].B = pseudo;
-            }
-        }
-    }
-
     add(player, socket) {
         let isUserAdded = false;
 
@@ -91,7 +73,6 @@ class Session {
         let map = this.sessions.get(team);
         if (map) {
             let size = Array.from(map.keys()).indexOf(1);
-            this.setJSON(size, team, '');
             map.delete(pseudo);
         }
     }

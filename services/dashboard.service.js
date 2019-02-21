@@ -59,6 +59,8 @@ class DashboardService {
                 isGoodResponse: userResponse.isGoodResponse
             });
         });
+
+        return history;
     }
 
     retrieveRandomDashboardStatistics(uuid, teamPlayers) {
