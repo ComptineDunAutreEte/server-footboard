@@ -56,7 +56,8 @@ let room = {
     navigate: "navigation", //code 20
     ready: "ready",
     team_A: "team_A",
-    team_B: "team_B"
+    team_B: "team_B",
+    result: "result"
 };
 
 function join_rooms(socket, team) {
@@ -65,6 +66,7 @@ function join_rooms(socket, team) {
     socket.join(room.question_sequentiel);
     socket.join(room.ready);
     socket.join(room.qst_screen);
+    socket.join(room.result);
     if (team === 'A') {
         console.log('team_A');
         socket.join(room.team_A);
@@ -173,6 +175,11 @@ function question_collectif_par(socket) {
             if (more !== undefined) {
                 if (more.toSession === -1) {
                     questionv2.ready[1] = true;
+                    for (let p of questionv2.results) {
+                        if (p.team === 'B') {
+                            p.score = 0;
+                        }
+                    }
                     sendToAll(room.team_B, 'Mince, votre équipe à perdu le ballon...', 'lost');
                 } else {
                     sendToOne(more.new_answer, questionv2.sessionB[more.toSession], 'moreAnswer');
@@ -183,6 +190,11 @@ function question_collectif_par(socket) {
             if (more !== undefined) {
                 if (more.toSession === -1) {
                     questionv2.ready[0] = true;
+                    for (let p of questionv2.results) {
+                        if (p.team === 'A') {
+                            p.score = 0;
+                        }
+                    }
                     sendToAll(room.team_A, 'Mince, votre équipe à perdu le ballon...', 'lost');
                 } else {
                     sendToOne(more.new_answer, questionv2.sessionA[more.toSession], 'moreAnswer');
@@ -194,12 +206,14 @@ function question_collectif_par(socket) {
 
 
         if (questionv2.answer_A.length === questionv2.sessionA.length) {
+            console.log('team A all answer');
             questionv2.ready[0] = true;
             //all-answered
             sendToAll(room.team_A, 'Veuillez attendre l\'équipe Adverse', 'wait-for-others');
             //io.to('team_A').emit('wait-for-others', 'Veuillez attendre l\'équipe Adverse');
         }
         if (questionv2.answer_B.length === questionv2.sessionB.length) {
+            console.log('team B all answer');
             questionv2.ready[1] = true;
             if (questionv2.sessionB.length > 0) {
                 //io.to('team_B').emit('all-answered', '');
@@ -210,6 +224,7 @@ function question_collectif_par(socket) {
         }
 
         if (questionv2.ready[0] && questionv2.ready[1]) {
+            console.log('===all answer everyone===');
             ///io.to('question-parrallel').emit('all-answered', '');
             sendToAll(room.question_parrallel, '', 'all-answered');
         }
@@ -308,6 +323,7 @@ io.sockets.on('connection', function(socket) {
             console.log('ici-table : ' + message.data);
             session.table = socket;
             socket.join(room.question_parrallel);
+            socket.join(room.result);
 
             sendToOne({
                 team: gameService.determineWhichTeamPlayInFirst(["red", "blue"])
@@ -328,6 +344,22 @@ io.sockets.on('connection', function(socket) {
             socket.on('ready-screen-par', message => {
                 console.log('table:ready-screen-par');
                 sendToAll(room.ready, '', 'ready-screen-par');
+            });
+
+            socket.on('ask-result', message => {
+                console.log('ask-result');
+                let map_ = {};
+                for (let p of questionv2.results) {
+                    //map_.set(p.uuid, p.score);
+                    let point = questionv2.points.get(p.uuid);
+                    if (point) {
+                        map_[p.uuid] = point;
+                    } else {
+                        map_[p.uuid] = p.score;
+                    }
+                }
+                console.log(map_);
+                sendToAll(room.result, map_, 'result');
             });
 
             //===================QUESTION PAR=====================

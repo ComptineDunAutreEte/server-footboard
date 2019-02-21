@@ -18,9 +18,12 @@ class QuestionCollectifV2 {
         this.answer_A = [];
         this.answer_B = [];
         this.points = new Map();
+        this.results = [];
+
     }
     addSession(socket, player) {
         this.team_map.set(player.uuid, socket);
+        this.results.push(player);
         if (player.team === 'A') {
             this.sessionA.push(socket);
         } else {
@@ -94,7 +97,8 @@ class QuestionCollectifV2 {
         let newMessage = null;
         let more = this.more_answers[message.data.nextMove];
 
-        this.points.set(message.uuid, message.data.moveTo[0].point);
+        this.points.set(message.uuid, message.data.point);
+        console.log('les points========', this.points);
         if (message.team === 'A') {
             this.answer_A.push(message.data);
             newMessage = this.handle(this.team_A, message.data);
@@ -130,6 +134,11 @@ class QuestionCollectifV2 {
 
         this.team_A = JSON.parse(JSON.stringify(situation3.team_A));
         this.team_B = JSON.parse(JSON.stringify(situation3.team_B));
+
+        this.answer_A = [];
+        this.answer_B = [];
+
+        this.results = [];
 
         this.answers = answers3;
         this.points.clear();
