@@ -1,5 +1,6 @@
 const utils = require("../utils");
 const TeamInformations = require("../model/team-informations");
+const simplesQuestions = require("../data/simplesQuestions");
 
 class TeamInformationsService {
 
@@ -11,7 +12,8 @@ class TeamInformationsService {
         const teamInfos = [];
 
         if (!nResponses) {
-            nResponses = utils.getRandom(15, 30);
+            // nResponses = utils.getRandom(15, 30);
+            nResponses = simplesQuestions.length;
         }
 
         for (let i = 0; i < nResponses; i++) {

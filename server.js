@@ -649,16 +649,18 @@ function retrieveSimpleQuestionResponse(socket) {
 function retrieveDashboardDatas(socket) {
     socket.on("dashboard-request", (response) => {
         if (response.data.request === true) {
-            let dashboardDatas = dashboardService.retrieveRandomDashboardStatistics(
+            // Random datas
+            /*let dashboardDatas = dashboardService.retrieveRandomDashboardStatistics(
                 response.uiid,
                 session.getTeam(session.getPlayer(response.uuid).team).players.size
-            );
+            );*/
 
-            /*const dashboardDatas = dashboardService.retrieveDashboardStatistics(
+            // Correct datas
+            const dashboardDatas = dashboardService.retrieveDashboardStatistics(
                 response.uuid,
                 playersResponsesInformations,
                 session.getTeam(session.getPlayer(response.uuid).team).players.size
-            );*/
+            );
 
             socket.emit("dashboard-datas", dashboardDatas);
         }
