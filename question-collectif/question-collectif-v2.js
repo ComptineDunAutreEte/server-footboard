@@ -1,17 +1,29 @@
 class QuestionCollectifV2 {
     constructor(situation, answers) {
-        this.situation = situation;
+        this.situation = situation.situation;
+
+        this.team_A = JSON.parse(JSON.stringify(situation.team_A));
+        this.team_B = JSON.parse(JSON.stringify(situation.team_B));
+
+        this.more_answers = situation.more_answers;
+
         this.answers = answers;
         this.ready = [false, false];
+
+        this.team_map = new Map();
+
         this.sessionA = [];
         this.sessionB = [];
-        this.team_map = new Map();
 
         this.answer_A = [];
         this.answer_B = [];
+        this.points = new Map();
+        this.results = [];
+
     }
     addSession(socket, player) {
-        this.team_map.set(player.uuid, player.team);
+        this.team_map.set(player.uuid, socket);
+        this.results.push(player);
         if (player.team === 'A') {
             this.sessionA.push(socket);
         } else {
@@ -19,31 +31,87 @@ class QuestionCollectifV2 {
         }
     }
 
-    answer(message, io, table) {
-        //let team = this.team_map.get(message.uuid);
-        if (message.team === 'A') {
-            this.answer_A.push(message.data);
-        } else {
-            this.answer_B.push(message.data);
-        }
-
-        if (this.answer_A.length === this.sessionA.length) {
-            this.ready[0] = true;
-            //all-answered
-            io.to('team_A').emit('wait-for-others', 'Veuillez attendre l\'équipe Adverse');
-        }
-        if (this.answer_B.length === this.sessionB.length) {
-            this.ready[1] = true;
-            if (this.sessionB.length > 0) {
-                //io.to('team_B').emit('all-answered', '');
-                //send all-answer
-                io.to('team_B').emit('wait-for-others', 'Veuillez attendre l\'équipe Adverse');
+    getBall(team) {
+        for (let obj of team.tab) {
+            if (obj.type === 'Ball') {
+                return obj;
             }
         }
+        return null;
+    }
 
-        if (this.ready[0] && this.ready[1]) {
-            io.to('question-parrallel').emit('all-answered', '');
+    getPlayer(team, player) {
+            for (let obj of team.tab) {
+                if (obj.uuid === player) {
+                    return obj;
+                }
+            }
+            return null;
         }
+        //"x":496.5,"y":260.5 ball
+
+    //"x":477,"y":228 player
+    handle_lost_game() {
+
+    }
+    handle(team, answer) {
+        if (answer.moveTo !== null) {
+            if (answer.type === 'Player') {
+                if (team.playerHasBall === answer.moveTo[0].uuid) {
+                    let ball = this.getBall(team);
+                    //+10,5 +40,5
+                    if (ball) {
+                        let x = answer.moveTo[0].x + 10.5;
+                        let y = answer.moveTo[0].y + 40.5;
+
+                        ball.x = x;
+                        ball.y = y;
+                        answer.moveTo.push(ball);
+                    }
+                } else {
+                    let player = this.getPlayer(team, answer.moveTo[0].uuid);
+                    if (player) {
+                        console.log(player);
+                        player.x = answer.moveTo[0].x;
+                        player.y = answer.moveTo[0].y;
+                    }
+                }
+            } else {
+                if (answer.moveTo[0].toPlayer !== null) {
+                    let player = this.getPlayer(team, answer.moveTo[0].toPlayer);
+                    if (player) {
+                        answer.moveTo[0].x = player.x + 10.5;
+                        answer.moveTo[0].y = player.y + 40.5;
+                    }
+                }
+                team.playerHasBall = answer.moveTo[0].toPlayer;
+            }
+        }
+        return answer;
+
+    }
+
+    answer(message, io, table) {
+        //let team = this.team_map.get(message.uuid);
+        //for()
+        let newMessage = null;
+        let more = this.more_answers[message.data.nextMove];
+
+        this.points.set(message.uuid, message.data.point);
+        console.log('les points========', this.points);
+        if (message.team === 'A') {
+            this.answer_A.push(message.data);
+            newMessage = this.handle(this.team_A, message.data);
+        } else {
+            this.answer_B.push(message.data);
+            newMessage = this.handle(this.team_B, message.data);
+        }
+        if (more !== undefined && more.toSession === -1) {
+            console.log('more.tosession ', more);
+            newMessage.moveTo.push(more.lost_game[0]);
+        }
+        console.log('new-answer', newMessage);
+        return newMessage;
     }
 
     send_answer() {
@@ -60,6 +128,20 @@ class QuestionCollectifV2 {
         this.sessionA = [];
         this.sessionB = [];
         this.ready = [false, false];
+
+
+        this.situation = situation3.situation;
+
+        this.team_A = JSON.parse(JSON.stringify(situation3.team_A));
+        this.team_B = JSON.parse(JSON.stringify(situation3.team_B));
+
+        this.answer_A = [];
+        this.answer_B = [];
+
+        this.results = [];
+
+        this.answers = answers3;
+        this.points.clear();
     }
 }
 
@@ -70,172 +152,446 @@ class QuestionCollectifV2 {
 const answers3 = [{
         "question": "Vous incarnez Neymar que faîtes vous?",
         "reponses": [{
+                "type": "Player",
                 "reponse": "Je ne bouge pas",
-                "moveTo": null
+                "moveTo": null,
+                "point": 0
             },
             {
+                "type": "Player",
                 "reponse": "j'avance vers la zone A",
-                "moveTo": [{ "zone": "A", "color": "#03a9f4", "x": 545.5, "y": 408, "size": 100, "uuid": "19e1daf2-645b-446f-9988-a333d918da0e", "type": "Player", "name": "Neymar", "image": "PBlanc", "style": { "width": 100, "height": 100 } }]
+                "moveTo": [{
+                    "zone": "A",
+                    "color": "#03a9f4",
+                    "x": 545.5,
+                    "y": 408,
+                    "size": 100,
+                    "uuid": "19e1daf2-645b-446f-9988-a333d918da0e",
+                    "type": "Player",
+                    "name": "Neymar",
+                    "image": "PBlanc",
+                    "style": {
+                        "width": 100,
+                        "height": 100
+                    }
+                }],
+                "point": 0
             }
         ]
     },
     {
         "question": "Vous incarnez MBappe que faîtes vous?",
         "reponses": [{
+                "type": "Ball",
                 "reponse": "Je passe le ballon à Canavi",
-                "moveTo": [{ "color": "#03a9f4", "x": 200, "y": 359.5, "size": 30, "uuid": "a8e58472-9cb4-40f0-8409-5c6c9060f118", "type": "Ball", "name": "", "image": "Ball", "style": { "width": 30, "height": 30 } }]
+                "moveTo": [{
+                    "color": "#03a9f4",
+                    "x": 496.5,
+                    "y": 260.5,
+                    "size": 30,
+                    "uuid": "a8e58472-9cb4-40f0-8409-5c6c9060f118",
+                    "type": "Ball",
+                    "name": "",
+                    "image": "Ball",
+                    "style": {
+                        "width": 30,
+                        "height": 30
+                    },
+                    "toPlayer": null
+                }],
+                "nextMove": "next_move_for_Canavi",
+                "point": 0
             },
             {
+                "type": "Ball",
                 "reponse": "Je passe le ballon à Neymar",
-                "moveTo": [{ "color": "#03a9f4", "x": 610.5, "y": 316.5, "size": 30, "uuid": "a8e58472-9cb4-40f0-8409-5c6c9060f118", "type": "Ball", "name": "", "image": "Ball", "style": { "width": 30, "height": 30 } }]
+                "moveTo": [{
+                    "color": "#03a9f4",
+                    "x": 610.5,
+                    "y": 316.5,
+                    "size": 30,
+                    "uuid": "a8e58472-9cb4-40f0-8409-5c6c9060f118",
+                    "type": "Ball",
+                    "name": "",
+                    "image": "Ball",
+                    "style": {
+                        "width": 30,
+                        "height": 30
+                    },
+                    "toPlayer": "19e1daf2-645b-446f-9988-a333d918da0e"
+                }],
+                "nextMove": "next_move_for_Neymar",
+                "point": 5
+
             }
         ]
     },
     {
         "question": "Vous incarnez Canavi que fâites vous?",
         "reponses": [{
+                "type": "Player",
                 "reponse": "Je ne bouge pas",
-                "moveTo": null
+                "moveTo": null,
+                "point": 0
             },
             {
+                "type": "Player",
                 "reponse": "j'avance vers la zone C",
-                "moveTo": [{ "zone": "C", "color": "#03a9f4", "x": 151, "y": 328.5, "size": 100, "uuid": "1367d74b-eaa4-4416-987c-1e55804e2570", "type": "Player", "name": "Cavani", "image": "PBlanc", "style": { "width": 100, "height": 100 } }]
+                "moveTo": [{
+                    "zone": "C",
+                    "color": "#03a9f4",
+                    "x": 151,
+                    "y": 328.5,
+                    "size": 100,
+                    "uuid": "1367d74b-eaa4-4416-987c-1e55804e2570",
+                    "type": "Player",
+                    "name": "Cavani",
+                    "image": "PBlanc",
+                    "style": {
+                        "width": 100,
+                        "height": 100
+                    }
+                }],
+                "point": 5
             }
         ]
     }
 ];
 
-const situation3 = [{
-    "color": "#03a9f4",
-    "x": 654,
-    "y": 499,
-    "size": 100,
-    "uuid": "445af3fa-0820-448f-bb27-54784398bf0a",
-    "type": "Player",
-    "name": "",
-    "image": "PBlanc",
-    "style": {
-        "width": 100,
-        "height": 100
+const situation3 = {
+    "more_answers": {
+        "next_move_for_Neymar": {
+            "toSession": 0,
+            "new_answer": {
+                "type": "Ball",
+                "reponse": "je tire!",
+                "moveTo": [{
+                    "color": "#03a9f4",
+                    "x": 172.5,
+                    "y": 276.5,
+                    "size": 100,
+                    "uuid": "a8e58472-9cb4-40f0-8409-5c6c9060f118",
+                    "type": "Ball",
+                    "name": "",
+                    "image": "Ball",
+                    "style": {
+                        "width": 30,
+                        "height": 30
+                    }
+                }],
+                "toPlayer": null,
+                "point": 5
+            }
+        },
+        "next_move_for_Canavi": {
+            "toSession": -1,
+            "lost_game": [{
+                "color": "#03a9f4",
+                "x": 477,
+                "y": 228,
+                "size": 100,
+                "uuid": "119403e8-0b09-4a95-acf1-f3a40033f094",
+                "type": "Player",
+                "name": "",
+                "image": "PBleu",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            }]
+        }
+    },
+    "team_B": {
+        "playerHasBall": "05cdb75b-a987-4b6c-8007-5495409e76fb",
+        "tab": [{
+                "color": "#03a9f4",
+                "x": 591,
+                "y": 188,
+                "size": 100,
+                "uuid": "a8e58472-9cb4-40f0-8409-5c6c9060f118",
+                "type": "Ball",
+                "name": "",
+                "image": "Ball",
+                "style": {
+                    "width": 30,
+                    "height": 30
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 400.5,
+                "y": 289.5,
+                "size": 100,
+                "uuid": "1367d74b-eaa4-4416-987c-1e55804e2570",
+                "type": "Player",
+                "name": "Cavani",
+                "image": "PBlanc",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 620.5,
+                "y": 154,
+                "size": 100,
+                "uuid": "05cdb75b-a987-4b6c-8007-5495409e76fb",
+                "type": "Player",
+                "name": "Mbappe",
+                "image": "PBleuFoot",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 635,
+                "y": 276.5,
+                "size": 100,
+                "uuid": "19e1daf2-645b-446f-9988-a333d918da0e",
+                "type": "Player",
+                "name": "Neymar",
+                "image": "PBlanc",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            }, {
+                "color": "#03a9f4",
+                "x": 545,
+                "y": 245.5,
+                "size": 100,
+                "uuid": "119403e8-0b09-4a95-acf1-f3a40033f094",
+                "type": "Player",
+                "name": "",
+                "image": "PBleu",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            }
+        ]
+    },
+    "team_A": {
+        "playerHasBall": "05cdb75b-a987-4b6c-8007-5495409e76fb",
+        "tab": [{
+                "color": "#03a9f4",
+                "x": 591,
+                "y": 188,
+                "size": 100,
+                "uuid": "a8e58472-9cb4-40f0-8409-5c6c9060f118",
+                "type": "Ball",
+                "name": "",
+                "image": "Ball",
+                "style": {
+                    "width": 30,
+                    "height": 30
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 400.5,
+                "y": 289.5,
+                "size": 100,
+                "uuid": "1367d74b-eaa4-4416-987c-1e55804e2570",
+                "type": "Player",
+                "name": "Cavani",
+                "image": "PBlanc",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 620.5,
+                "y": 154,
+                "size": 100,
+                "uuid": "05cdb75b-a987-4b6c-8007-5495409e76fb",
+                "type": "Player",
+                "name": "Mbappe",
+                "image": "PBleuFoot",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 635,
+                "y": 276.5,
+                "size": 100,
+                "uuid": "19e1daf2-645b-446f-9988-a333d918da0e",
+                "type": "Player",
+                "name": "Neymar",
+                "image": "PBlanc",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            }, {
+                "color": "#03a9f4",
+                "x": 545,
+                "y": 245.5,
+                "size": 100,
+                "uuid": "119403e8-0b09-4a95-acf1-f3a40033f094",
+                "type": "Player",
+                "name": "",
+                "image": "PBleu",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            }
+        ]
+    },
+    "situation": {
+        "screen": { x: 1194, y: 834 },
+        "situations": [{
+                "color": "#03a9f4",
+                "x": 654,
+                "y": 499,
+                "size": 100,
+                "uuid": "445af3fa-0820-448f-bb27-54784398bf0a",
+                "type": "Player",
+                "name": "",
+                "image": "PBlanc",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 620.5,
+                "y": 154,
+                "size": 100,
+                "uuid": "05cdb75b-a987-4b6c-8007-5495409e76fb",
+                "type": "Player",
+                "name": "Mbappe",
+                "image": "PBleuFoot",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 635,
+                "y": 276.5,
+                "size": 100,
+                "uuid": "19e1daf2-645b-446f-9988-a333d918da0e",
+                "type": "Player",
+                "name": "Neymar",
+                "image": "PBlanc",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 406.5,
+                "y": 413,
+                "size": 100,
+                "uuid": "a694ebea-9f8a-4262-9d2c-d366788afd33",
+                "type": "Player",
+                "name": "",
+                "image": "PBleu",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 442.5,
+                "y": 318.5,
+                "size": 100,
+                "uuid": "ec16b71e-4b78-4452-9dea-2d96c4b0486d",
+                "type": "Player",
+                "name": "",
+                "image": "PBleu",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 482.5,
+                "y": 294,
+                "size": 100,
+                "uuid": "e2158c5f-5aff-43fb-8707-d7746ddc0527",
+                "type": "Player",
+                "name": "",
+                "image": "PBleu",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 545,
+                "y": 245.5,
+                "size": 100,
+                "uuid": "119403e8-0b09-4a95-acf1-f3a40033f094",
+                "type": "Player",
+                "name": "",
+                "image": "PBleu",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 716,
+                "y": 189.5,
+                "size": 100,
+                "uuid": "30cc49cf-fd73-4827-97d0-e6f1c601d5cb",
+                "type": "Player",
+                "name": "",
+                "image": "PBleu",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 591,
+                "y": 188,
+                "size": 100,
+                "uuid": "a8e58472-9cb4-40f0-8409-5c6c9060f118",
+                "type": "Ball",
+                "name": "",
+                "image": "Ball",
+                "style": {
+                    "width": 30,
+                    "height": 30
+                }
+            },
+            {
+                "color": "#03a9f4",
+                "x": 400.5,
+                "y": 289.5,
+                "size": 100,
+                "uuid": "1367d74b-eaa4-4416-987c-1e55804e2570",
+                "type": "Player",
+                "name": "Cavani",
+                "image": "PBlanc",
+                "style": {
+                    "width": 100,
+                    "height": 100
+                }
+            }
+        ]
     }
-}, {
-    "color": "#03a9f4",
-    "x": 620.5,
-    "y": 154,
-    "size": 100,
-    "uuid": "05cdb75b-a987-4b6c-8007-5495409e76fb",
-    "type": "Player",
-    "name": "Mbappe",
-    "image": "PBleuFoot",
-    "style": {
-        "width": 100,
-        "height": 100
-    }
-}, {
-    "color": "#03a9f4",
-    "x": 635,
-    "y": 276.5,
-    "size": 100,
-    "uuid": "19e1daf2-645b-446f-9988-a333d918da0e",
-    "type": "Player",
-    "name": "Neymar",
-    "image": "PBlanc",
-    "style": {
-        "width": 100,
-        "height": 100
-    }
-}, {
-    "color": "#03a9f4",
-    "x": 406.5,
-    "y": 413,
-    "size": 100,
-    "uuid": "a694ebea-9f8a-4262-9d2c-d366788afd33",
-    "type": "Player",
-    "name": "",
-    "image": "PBleu",
-    "style": {
-        "width": 100,
-        "height": 100
-    }
-}, {
-    "color": "#03a9f4",
-    "x": 442.5,
-    "y": 318.5,
-    "size": 100,
-    "uuid": "ec16b71e-4b78-4452-9dea-2d96c4b0486d",
-    "type": "Player",
-    "name": "",
-    "image": "PBleu",
-    "style": {
-        "width": 100,
-        "height": 100
-    }
-}, {
-    "color": "#03a9f4",
-    "x": 482.5,
-    "y": 294,
-    "size": 100,
-    "uuid": "e2158c5f-5aff-43fb-8707-d7746ddc0527",
-    "type": "Player",
-    "name": "",
-    "image": "PBleu",
-    "style": {
-        "width": 100,
-        "height": 100
-    }
-}, {
-    "color": "#03a9f4",
-    "x": 545,
-    "y": 245.5,
-    "size": 100,
-    "uuid": "119403e8-0b09-4a95-acf1-f3a40033f094",
-    "type": "Player",
-    "name": "",
-    "image": "PBleu",
-    "style": {
-        "width": 100,
-        "height": 100
-    }
-}, {
-    "color": "#03a9f4",
-    "x": 716,
-    "y": 189.5,
-    "size": 100,
-    "uuid": "30cc49cf-fd73-4827-97d0-e6f1c601d5cb",
-    "type": "Player",
-    "name": "",
-    "image": "PBleu",
-    "style": {
-        "width": 100,
-        "height": 100
-    }
-}, {
-    "color": "#03a9f4",
-    "x": 591,
-    "y": 188,
-    "size": 100,
-    "uuid": "a8e58472-9cb4-40f0-8409-5c6c9060f118",
-    "type": "Ball",
-    "name": "",
-    "image": "Ball",
-    "style": {
-        "width": 30,
-        "height": 30
-    }
-}, {
-    "color": "#03a9f4",
-    "x": 400.5,
-    "y": 289.5,
-    "size": 100,
-    "uuid": "1367d74b-eaa4-4416-987c-1e55804e2570",
-    "type": "Player",
-    "name": "Cavani",
-    "image": "PBlanc",
-    "style": {
-        "width": 100,
-        "height": 100
-    }
-}];
+};
 
 const answers = [{
         "question": "Vous êtes le joueur J1, Que devriez vous faire pour que votre équipe garde le ballon?",
