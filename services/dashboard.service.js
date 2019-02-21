@@ -75,6 +75,7 @@ class DashboardService {
 
 
         return {
+            history: this.retrieveHistory(userResponses),
             perso: {
                 userResponses: userResponses,
                 generalResponses: generalResponses

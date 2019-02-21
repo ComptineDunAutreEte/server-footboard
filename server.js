@@ -246,6 +246,10 @@ const gameService = new GameService();
 let playersTime = [];
 let playersNumber = 0;
 let sequence = [
+    "standard",
+    "standard",
+    "standard",
+    "standard",
     "parallel",
     "parallel",
     "standard",
@@ -639,16 +643,16 @@ function retrieveSimpleQuestionResponse(socket) {
 function retrieveDashboardDatas(socket) {
     socket.on("dashboard-request", (response) => {
         if (response.data.request === true) {
-            /*let dashboardDatas = dashboardService.retrieveRandomDashboardStatistics(
+            let dashboardDatas = dashboardService.retrieveRandomDashboardStatistics(
                 response.uiid,
                 session.getTeam(session.getPlayer(response.uuid).team).players.size
-            );*/
+            );
 
-            const dashboardDatas = dashboardService.retrieveDashboardStatistics(
+            /*const dashboardDatas = dashboardService.retrieveDashboardStatistics(
                 response.uuid,
                 playersResponsesInformations,
                 session.getTeam(session.getPlayer(response.uuid).team).players.size
-            );
+            );*/
 
             socket.emit("dashboard-datas", dashboardDatas);
         }
