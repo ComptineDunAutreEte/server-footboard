@@ -346,6 +346,11 @@ io.sockets.on('connection', function(socket) {
                 sendToAll(room.ready, '', 'ready-screen-par');
             });
 
+            socket.on('terminer', message => {
+                console.log(terminer);
+                sendToAll(room.question_parrallel, '', 'terminer');
+            });
+
             socket.on('ask-result', message => {
                 console.log('ask-result');
                 let map_ = {};
