@@ -246,6 +246,17 @@ const gameService = new GameService();
 let playersTime = [];
 let playersNumber = 0;
 let isAllPlayersResponded = false;
+let sequence = [
+    "parallel",
+    "parallel",
+    "standard",
+    "standard",
+    "standard",
+    "standard",
+    "standard",
+    "standard",
+    "standard"
+];
 
 io.sockets.on('connection', function(socket) {
     socket.on('login', (message) => {
@@ -410,26 +421,19 @@ io.sockets.on('connection', function(socket) {
         const requestQuestionChannel = "request-question";
 
         socket.on(requestQuestionChannel, (msg) => {
-            // TODO mettre un vrai random entre 1 et 3
-            const random = 1;
+            if (sequence.length > 0) {
+                const seq = sequence[0];
 
-            if (msg.data === "endOfSequence") {
-                switch (random) {
-                    case 1:
-                        io.emit("waitingScreen", { isReady: true });
-                        socket.emit("start-of-new-question", {
-                            data: 1
-                        });
-                        break;
-                    case 2:
+                if (seq === "parallel") {
+                    // Ta logique Long
 
-                        // TODO Implémenter questions collectif
-                        break;
-                    case 3:
-                        // TODO implémenter questions //
-                        break;
-                    default:
-                        break;
+                    sequence.shift();
+                } else {
+                    io.emit("waitingScreen", { isReady: true });
+                    socket.emit("start-of-new-question", {
+                        data: 1
+                    });
+                    sequence.shift();
                 }
             }
         });
