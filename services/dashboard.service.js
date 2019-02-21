@@ -13,16 +13,36 @@ class DashboardService {
     }
 
     retrieveDashboardStatistics(uuid, playersResponsesInformations, teamPlayers) {
-        const history = [];
-
         const userResponsesService = new UserResponseInformationsService();
-        const userResponses = playersResponsesInformations.filter((p) => p.playerUuid === uuid);
+        const userResponses = this.retrieveUserResponses(playersResponsesInformations, uuid);
         const generalResponses = userResponsesService.createRandomResponses(userResponses.length);
 
         const teamInformationsService = new TeamInformationsService(teamPlayers);
 
         const aResponses = teamInformationsService.createRandomInformations();
         const bResponses = teamInformationsService.createRandomInformations(aResponses.length);
+
+        const history = this.retrieveHistory(userResponses);
+
+        return {
+            history: history,
+            perso: {
+                userResponses: userResponses,
+                generalResponses: generalResponses
+            },
+            team: {
+                aResponses: aResponses,
+                bResponses: bResponses
+            }
+        };
+    }
+
+    retrieveUserResponses(playersResponsesInformations, uuid) {
+        return playersResponsesInformations.filter((p) => p.playerUuid === uuid);
+    }
+
+    retrieveHistory(userResponses) {
+        const history = [];
 
         userResponses.forEach((userResponse, i) => {
             const question = questions.find((q) => q.id === userResponse.questionId);
@@ -39,19 +59,6 @@ class DashboardService {
                 isGoodResponse: userResponse.isGoodResponse
             });
         });
-
-        return {
-            history: history,
-            perso: {
-                userResponses: userResponses,
-                generalResponses: generalResponses
-            },
-            team: {
-                aResponses: aResponses,
-                bResponses: bResponses
-            }
-        };
-
     }
 
     retrieveRandomDashboardStatistics(uuid, teamPlayers) {
