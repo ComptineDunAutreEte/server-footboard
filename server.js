@@ -245,7 +245,6 @@ const GameService = require("./services/game.service");
 const gameService = new GameService();
 let playersTime = [];
 let playersNumber = 0;
-let isAllPlayersResponded = false;
 let sequence = [
     "parallel",
     "parallel",
@@ -421,19 +420,21 @@ io.sockets.on('connection', function(socket) {
         const requestQuestionChannel = "request-question";
 
         socket.on(requestQuestionChannel, (msg) => {
-            if (sequence.length > 0) {
-                const seq = sequence[0];
+            if (msg.data === "endOfSequence") {
+                if (sequence.length > 0) {
+                    const seq = sequence[0];
 
-                if (seq === "parallel") {
-                    // Ta logique Long
+                    if (seq === "parallel") {
+                        // Ta logique Long
 
-                    sequence.shift();
-                } else {
-                    io.emit("waitingScreen", { isReady: true });
-                    socket.emit("start-of-new-question", {
-                        data: 1
-                    });
-                    sequence.shift();
+                        sequence.shift();
+                    } else {
+                        io.emit("waitingScreen", { isReady: true });
+                        socket.emit("start-of-new-question", {
+                            data: 1
+                        });
+                        sequence.shift();
+                    }
                 }
             }
         });
