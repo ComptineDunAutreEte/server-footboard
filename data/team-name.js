@@ -1,6 +1,6 @@
 const teamNames = [
-    "Rouge",
-    "Bleu"
+    "A",
+    "B"
 ];
 
 module.exports = teamNames;
