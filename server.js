@@ -267,6 +267,7 @@ io.sockets.on('connection', function(socket) {
             player.pseudo = data.pseudo;
             player.uuid = message.uuid;
             player.team = data.team;
+            console.log(data.team);
             player.level = data.userLevel;
 
             if (session.add(player, socket)) {
