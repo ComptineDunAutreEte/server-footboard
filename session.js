@@ -29,10 +29,9 @@ class Session {
 
     add(player, socket) {
         let isUserAdded = false;
-
         this.teams.forEach((team) => {
             if (team.name === player.team && team.players.size < 3) {
-                console.log("if");
+                console.log("addplayer: ", player);
                 team.players.set(player.uuid, player);
                 player.session = socket;
 

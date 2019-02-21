@@ -1,7 +1,7 @@
 class QuestionCollectifV2 {
     constructor(situation, answers) {
         this.situation = situation.situation;
-
+        this.good_answers = situation.good_answers;
         this.team_A = JSON.parse(JSON.stringify(situation.team_A));
         this.team_B = JSON.parse(JSON.stringify(situation.team_B));
 
@@ -23,6 +23,7 @@ class QuestionCollectifV2 {
     }
     addSession(socket, player) {
         this.team_map.set(player.uuid, socket);
+        player.score = 0;
         this.results.push(player);
         if (player.team === 'A') {
             this.sessionA.push(socket);
@@ -98,6 +99,7 @@ class QuestionCollectifV2 {
         let more = this.more_answers[message.data.nextMove];
 
         this.points.set(message.uuid, message.data.point);
+
         console.log('les points========', this.points);
         if (message.team === 'A') {
             this.answer_A.push(message.data);
@@ -146,7 +148,9 @@ class QuestionCollectifV2 {
 }
 
 
-
+//MBappe passe le ballon à Neymar
+//Neymar tire pour marquer
+//Canavi continue d'avancer
 
 
 const answers3 = [{
@@ -259,6 +263,7 @@ const answers3 = [{
 ];
 
 const situation3 = {
+    "good_answers": ["MBappe passe le ballon à Neymar", "Neymar tire pour marquer", "Canavi continue d'avancer"],
     "more_answers": {
         "next_move_for_Neymar": {
             "toSession": 0,

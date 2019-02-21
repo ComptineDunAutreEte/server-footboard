@@ -266,6 +266,8 @@ io.sockets.on('connection', function(socket) {
             const player = new Player();
             player.pseudo = data.pseudo;
             player.uuid = message.uuid;
+            if (data.team === 'team_A');
+
             player.team = data.team;
             console.log(data.team);
             player.level = data.userLevel;
@@ -358,8 +360,13 @@ io.sockets.on('connection', function(socket) {
                 sendToAll(room.ready, '', 'ready-screen-par');
             });
 
+            socket.on('terminer_jeux', message => {
+                console.log('terminer');
+                sendToAll(room.question_parrallel, '', 'terminer');
+            });
+
             socket.on('terminer', message => {
-                console.log(terminer);
+                console.log('terminer');
                 sendToAll(room.question_parrallel, '', 'terminer');
             });
 
@@ -375,6 +382,7 @@ io.sockets.on('connection', function(socket) {
                         map_[p.uuid] = p.score;
                     }
                 }
+                map_.good_answers = questionv2.good_answers;
                 console.log(map_);
                 sendToAll(room.result, map_, 'result');
             });
