@@ -440,7 +440,6 @@ io.sockets.on('connection', function(socket) {
             if (msg.data === "endOfSequence") {
                 if (sequence.length > 0) {
                     const seq = sequence[0];
-
                     if (seq === "parallel") {
                         // Ta logique Long
                         console.log('table:question-collectif-seq');
