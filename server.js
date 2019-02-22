@@ -351,6 +351,7 @@ io.sockets.on('connection', function(socket) {
             socket.on('question-collectif-seq', message => {
                 console.log('table:question-collectif-seq');
                 sendToAll(room.navigate, 'QuestionCollectif', 'navigate');
+
                 fs.readFile('./img_question.png', function(err, data) {
                     sendToAll(room.question_sequentiel, "data:image/png;base64," + data.toString("base64"), 'question-collectif-img');
                     //io.sockets.in(room.question_sequentiel).emit('question-collectif-img', "data:image/png;base64," + data.toString("base64"));
@@ -444,7 +445,13 @@ io.sockets.on('connection', function(socket) {
 
                     if (seq === "parallel") {
                         // Ta logique Long
+                        console.log('table:question-collectif-seq');
+                        sendToAll(room.navigate, 'QuestionCollectif', 'navigate');
 
+                        fs.readFile('./img_question.png', function(err, data) {
+                            sendToAll(room.question_sequentiel, "data:image/png;base64," + data.toString("base64"), 'question-collectif-img');
+                            //io.sockets.in(room.question_sequentiel).emit('question-collectif-img', "data:image/png;base64," + data.toString("base64"));
+                        });
                         sequence.shift();
                     } else {
                         io.emit("waitingScreen", { isReady: true });
