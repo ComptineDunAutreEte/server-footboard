@@ -445,6 +445,7 @@ io.sockets.on('connection', function(socket) {
                         console.log('table:question-collectif-par');
                         sendToAll(room.navigate, 'QuestionCollectifV2', 'navigate');
                         sendToAll(room.question_parrallel, questionv2.situation, 'situation');
+                        sendToOne('', session.table, 'start-question');
                         questionv2.send_answer();
                         sequence.shift();
                     } else {
