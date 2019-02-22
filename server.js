@@ -246,12 +246,10 @@ const gameService = new GameService();
 let playersTime = [];
 let playersNumber = 0;
 let sequence = [
-    "standard",
-    "standard",
-    "standard",
-    "standard",
     "parallel",
-    "parallel",
+    "standard",
+    "standard",
+    "standard",
     "standard",
     "standard",
     "standard",
@@ -447,7 +445,7 @@ io.sockets.on('connection', function(socket) {
                         // Ta logique Long
                         console.log('table:question-collectif-seq');
                         sendToAll(room.navigate, 'QuestionCollectif', 'navigate');
-
+                        sendToOne('', socket, 'start-question');
                         fs.readFile('./img_question.png', function(err, data) {
                             sendToAll(room.question_sequentiel, "data:image/png;base64," + data.toString("base64"), 'question-collectif-img');
                             //io.sockets.in(room.question_sequentiel).emit('question-collectif-img', "data:image/png;base64," + data.toString("base64"));
