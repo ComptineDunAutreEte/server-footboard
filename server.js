@@ -442,13 +442,10 @@ io.sockets.on('connection', function(socket) {
                     const seq = sequence[0];
                     if (seq === "parallel") {
                         // Ta logique Long
-                        console.log('table:question-collectif-seq');
-                        sendToAll(room.navigate, 'QuestionCollectif', 'navigate');
-                        sendToOne('', socket, 'start-question');
-                        fs.readFile('./img_question.png', function(err, data) {
-                            sendToAll(room.question_sequentiel, "data:image/png;base64," + data.toString("base64"), 'question-collectif-img');
-                            //io.sockets.in(room.question_sequentiel).emit('question-collectif-img', "data:image/png;base64," + data.toString("base64"));
-                        });
+                        console.log('table:question-collectif-par');
+                        sendToAll(room.navigate, 'QuestionCollectifV2', 'navigate');
+                        sendToAll(room.question_parrallel, questionv2.situation, 'situation');
+                        questionv2.send_answer();
                         sequence.shift();
                     } else {
                         io.emit("waitingScreen", { isReady: true });
