@@ -19,6 +19,7 @@ class QuestionCollectifV2 {
         this.answer_B = [];
         this.points = new Map();
         this.results = [];
+        this.final_result = [0, 0];
 
     }
     addSession(socket, player) {
@@ -104,7 +105,9 @@ class QuestionCollectifV2 {
         if (message.team === 'A') {
             this.answer_A.push(message.data);
             newMessage = this.handle(this.team_A, message.data);
+            this.final_result[0] = this.final_result[0] + message.data.point;
         } else {
+            this.final_result[1] = this.final_result[1] + message.data.point;
             this.answer_B.push(message.data);
             newMessage = this.handle(this.team_B, message.data);
         }

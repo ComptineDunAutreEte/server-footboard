@@ -369,7 +369,7 @@ io.sockets.on('connection', function(socket) {
 
             socket.on('terminer', message => {
                 console.log('terminer');
-                sendToAll(room.question_parrallel, '', 'terminer');
+                sendToAll(room.question_parrallel, questionv2.final_result, 'terminer');
             });
 
             socket.on('ask-result', message => {
