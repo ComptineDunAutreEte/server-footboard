@@ -488,6 +488,19 @@ io.sockets.on('connection', function(socket) {
         question.reset();
         questionv2.reset();
         session.reset();
+        sequence = [
+            "parallel",
+            "standard",
+            "standard",
+            "standard",
+            "standard",
+            "standard",
+            "standard",
+            "standard",
+            "standard",
+            "standard",
+            "standard"
+        ];
     });
 
     /*socket.on('question-collectif-request', (reason) => {
